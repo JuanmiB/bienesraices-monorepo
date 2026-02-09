@@ -24,7 +24,8 @@ const PropertyDetailPage = () => {
       try {
         const response = await api.get(`/api/v1/properties/${id}`);
         setResults(response.data.data);
-      } catch {
+      } catch (error) {
+        console.error('Error fetching property details:', error);
       } finally {
         setLoading(false);
       }

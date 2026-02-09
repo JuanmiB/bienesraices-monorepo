@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import FilterPanel from './FilterPanel';
 
 const SearchToolbar = ({
@@ -158,6 +159,19 @@ const SearchToolbar = ({
       </div>
     </div>
   );
+};
+
+SearchToolbar.propTypes = {
+  searchTerm: PropTypes.string.isRequired,
+  onSearchChange: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired,
+  onFiltersChange: PropTypes.func.isRequired,
+  onClearFilters: PropTypes.func.isRequired,
+  sortBy: PropTypes.string.isRequired,
+  onSortChange: PropTypes.func.isRequired,
+  viewMode: PropTypes.oneOf(['grid', 'list', 'map']).isRequired,
+  onViewModeChange: PropTypes.func.isRequired,
+  activeFiltersCount: PropTypes.number.isRequired
 };
 
 export default SearchToolbar;

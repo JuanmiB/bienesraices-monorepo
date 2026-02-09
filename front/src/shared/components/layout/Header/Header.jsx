@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from '@features/auth/context';
 import UserMenu from './UserMenu';
 import { api } from '@shared/services/api';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import './Header.css'
 
 const Header = () => {
@@ -130,7 +130,7 @@ const Header = () => {
                                             width: selectedCategory === category.value ? '100%' : '0%'
                                         }}
                                     />
-                                    <style jsx>{`
+                                    <style>{`
                                         button:hover span {
                                             width: 100%;
                                         }

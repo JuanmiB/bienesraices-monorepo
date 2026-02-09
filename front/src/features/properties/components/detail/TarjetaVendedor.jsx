@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Avatar } from '@shared/components';
 
 // StarRating — inline, no archivo separado
@@ -51,6 +52,10 @@ const StarRating = ({ rating }) => {
       })}
     </div>
   );
+};
+
+StarRating.propTypes = {
+  rating: PropTypes.number.isRequired
 };
 
 const TarjetaVendedor = ({ owner }) => {

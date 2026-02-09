@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const SearchStats = ({ totalResults, filteredResults, priceRange }) => (
   <div className="flex items-center justify-between mb-4">
     <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -16,5 +18,14 @@ const SearchStats = ({ totalResults, filteredResults, priceRange }) => (
     </div>
   </div>
 );
+
+SearchStats.propTypes = {
+  totalResults: PropTypes.number.isRequired,
+  filteredResults: PropTypes.number.isRequired,
+  priceRange: PropTypes.shape({
+    min: PropTypes.number.isRequired,
+    max: PropTypes.number.isRequired
+  })
+};
 
 export default SearchStats;

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
 const QuickViewModal = ({ property, onClose }) => {
@@ -199,6 +200,33 @@ const QuickViewModal = ({ property, onClose }) => {
       </div>
     </div>
   );
+};
+
+QuickViewModal.propTypes = {
+  property: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    title: PropTypes.string.isRequired,
+    propertyType: PropTypes.string.isRequired,
+    operationType: PropTypes.string.isRequired,
+    currency: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    address: PropTypes.string,
+    totalArea: PropTypes.number,
+    bedrooms: PropTypes.number,
+    bathrooms: PropTypes.number,
+    garages: PropTypes.number,
+    description: PropTypes.string,
+    mainImageUrl: PropTypes.string,
+    images: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          url: PropTypes.string
+        })
+      ])
+    )
+  }).isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
 export default QuickViewModal;

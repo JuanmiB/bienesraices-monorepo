@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import MapComponent from "../../../../components/Mapa/Mapa";
 import { MapPin } from 'lucide-react';
 
@@ -43,6 +44,11 @@ const PropiedadMapa = ({ lat, lng }) => {
       </div>
     </div>
   );
+};
+
+PropiedadMapa.propTypes = {
+  lat: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  lng: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 export default PropiedadMapa;

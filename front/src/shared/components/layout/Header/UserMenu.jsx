@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Avatar } from '@shared/components';
 
@@ -144,6 +145,30 @@ const UserMenu = ({ user, logout, menuItems = [], position = 'right' }) => {
       )}
     </div>
   );
+};
+
+UserMenu.propTypes = {
+  user: PropTypes.shape({
+    foto: PropTypes.string,
+    avatarUrl: PropTypes.string,
+    firstName: PropTypes.string,
+    nombre: PropTypes.string,
+    name: PropTypes.string,
+    lastName: PropTypes.string,
+    apellido: PropTypes.string,
+    email: PropTypes.string
+  }).isRequired,
+  logout: PropTypes.func.isRequired,
+  menuItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      href: PropTypes.string,
+      onClick: PropTypes.func,
+      icon: PropTypes.string,
+      isDanger: PropTypes.bool
+    })
+  ),
+  position: PropTypes.oneOf(['right', 'left'])
 };
 
 export default UserMenu;

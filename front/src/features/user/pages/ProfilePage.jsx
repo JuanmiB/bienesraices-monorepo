@@ -39,7 +39,8 @@ const ProfilePage = () => {
         if (data.avatarUrl || data.foto) {
           setAvatarPreview(data.avatarUrl || data.foto);
         }
-      } catch {
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
       } finally {
         setLoading(false);
       }
@@ -140,7 +141,7 @@ const ProfilePage = () => {
           />
           {avatarFile && (
             <p className="text-xs text-gray-500 text-center mt-4">
-              Haz click en "Guardar cambios" para actualizar tu foto
+              Haz click en &quot;Guardar cambios&quot; para actualizar tu foto
             </p>
           )}
         </div>
