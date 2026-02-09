@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@features/auth/context';
 import { AuthForm } from "@features/auth/components";
@@ -16,7 +16,8 @@ const ForgotPasswordPage = () => {
     try {
       await recoverPassword(email);
       setIsSuccess(true);
-    } catch {
+    } catch (error) {
+      console.error('Error recovering password:', error);
     }
   };
 

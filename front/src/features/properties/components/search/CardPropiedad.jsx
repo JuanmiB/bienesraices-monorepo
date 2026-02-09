@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 const CardPropiedad = ({ result }) => {
     const navigate = useNavigate()
@@ -58,5 +59,23 @@ const CardPropiedad = ({ result }) => {
         </>
     )
 }
+
+CardPropiedad.propTypes = {
+  result: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    title: PropTypes.string.isRequired,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    currency: PropTypes.string.isRequired,
+    address: PropTypes.string.isRequired,
+    mainImageUrl: PropTypes.string,
+    bedrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    bathrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    owner: PropTypes.shape({
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+      email: PropTypes.string
+    })
+  }).isRequired
+};
 
 export default CardPropiedad

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { MapPin, Bed, Bath, Square, Car, Calendar, Heart, TrendingUp } from 'lucide-react';
 
 const PropertyCardHorizontal = ({ property, onToggleFavorite, isFavorite }) => {
@@ -224,6 +225,40 @@ const PropertyCardHorizontal = ({ property, onToggleFavorite, isFavorite }) => {
             </div>
         </article>
     );
+};
+
+PropertyCardHorizontal.propTypes = {
+  property: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    title: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    currency: PropTypes.string.isRequired,
+    address: PropTypes.string.isRequired,
+    propertyType: PropTypes.string.isRequired,
+    operationType: PropTypes.string.isRequired,
+    mainImageUrl: PropTypes.string,
+    images: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          url: PropTypes.string
+        })
+      ])
+    ),
+    featured: PropTypes.bool,
+    bedrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    bathrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    totalArea: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    garages: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    yearBuilt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    condition: PropTypes.string,
+    owner: PropTypes.shape({
+      firstName: PropTypes.string,
+      avatarUrl: PropTypes.string
+    })
+  }).isRequired,
+  onToggleFavorite: PropTypes.func,
+  isFavorite: PropTypes.bool
 };
 
 export default PropertyCardHorizontal;

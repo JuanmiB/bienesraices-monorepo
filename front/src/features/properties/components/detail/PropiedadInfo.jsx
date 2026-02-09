@@ -1,4 +1,5 @@
 // PropiedadInfo.js
+import PropTypes from 'prop-types';
 import { Baños, Cochera, Dormitorio, MetrosTotal } from "../../../../icons/icon";
 
 const PropiedadInfo = ({ title, price, currency, address, bedrooms, bathrooms, garages, totalArea }) => (
@@ -28,5 +29,16 @@ const PropiedadInfo = ({ title, price, currency, address, bedrooms, bathrooms, g
     </ul>
   </div>
 );
+
+PropiedadInfo.propTypes = {
+  title: PropTypes.string.isRequired,
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  currency: PropTypes.string.isRequired,
+  address: PropTypes.string.isRequired,
+  bedrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  bathrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  garages: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  totalArea: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};
 
 export default PropiedadInfo;

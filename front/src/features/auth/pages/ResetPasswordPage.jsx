@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@features/auth/context';
 import { AuthForm } from "@features/auth/components";
@@ -28,7 +28,8 @@ const ResetPasswordPage = () => {
     try{
         await resetPassword(password, token);
         setIsSuccess(true);
-    } catch {
+    } catch (error) {
+        console.error('Error resetting password:', error);
     }
   };
 

@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const CompareBar = ({
   selectedProperties,
   onRemoveFromCompare,
@@ -61,6 +63,19 @@ const CompareBar = ({
       </div>
     </div>
   );
+};
+
+CompareBar.propTypes = {
+  selectedProperties: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      title: PropTypes.string,
+      mainImageUrl: PropTypes.string
+    })
+  ).isRequired,
+  onRemoveFromCompare: PropTypes.func.isRequired,
+  onClearCompare: PropTypes.func.isRequired,
+  onOpenCompareModal: PropTypes.func.isRequired
 };
 
 export default CompareBar;

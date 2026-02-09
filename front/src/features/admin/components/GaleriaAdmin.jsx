@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { api } from '@shared/services/api';
 
 const GaleriaAdmin = ({ propertyId, images: initialImages, onImagesChange }) => {
@@ -125,6 +126,19 @@ const GaleriaAdmin = ({ propertyId, images: initialImages, onImagesChange }) => 
       </div>
     </div>
   );
+};
+
+GaleriaAdmin.propTypes = {
+  propertyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      url: PropTypes.string.isRequired,
+      thumbnailUrl: PropTypes.string,
+      isPrimary: PropTypes.bool
+    })
+  ),
+  onImagesChange: PropTypes.func.isRequired
 };
 
 export default GaleriaAdmin;

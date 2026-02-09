@@ -96,4 +96,14 @@ const TarjetaVendedor = ({ owner }) => {
   );
 };
 
+TarjetaVendedor.propTypes = {
+  owner: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    avatarUrl: PropTypes.string,
+    phone: PropTypes.string
+  })
+};
+
 export default TarjetaVendedor;

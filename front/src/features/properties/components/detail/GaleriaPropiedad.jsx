@@ -1,26 +1,14 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const GaleriaPropiedad = ({ images }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
 
-  if (!images || images.length === 0) {
-    return (
-      <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400 rounded">
-        Sin imagen disponible
-      </div>
-    );
-  }
-
-  const activeImage = images[activeIndex];
-
-  const prev = () => setActiveIndex(i => Math.max(0, i - 1));
-  const next = () => setActiveIndex(i => Math.min(images.length - 1, i + 1));
-
   // Navegación con teclado (flechas)
   useEffect(() => {
-    // Solo agregar listener si el modal está abierto
-    if (!modalOpen) return;
+    // Solo agregar listener si el modal está abierto y hay imágenes
+    if (!modalOpen || !images || images.length === 0) return;
 
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowLeft') {
@@ -42,7 +30,20 @@ const GaleriaPropiedad = ({ images }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [modalOpen, images.length]);
+  }, [modalOpen, images]);
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400 rounded">
+        Sin imagen disponible
+      </div>
+    );
+  }
+
+  const activeImage = images[activeIndex];
+
+  const prev = () => setActiveIndex(i => Math.max(0, i - 1));
+  const next = () => setActiveIndex(i => Math.min(images.length - 1, i + 1));
 
   return (
     <div className="w-full">
@@ -128,6 +129,17 @@ const GaleriaPropiedad = ({ images }) => {
       )}
     </div>
   );
+};
+
+GaleriaPropiedad.propTypes = {
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      url: PropTypes.string.isRequired,
+      thumbnailUrl: PropTypes.string,
+      description: PropTypes.string
+    })
+  )
 };
 
 export default GaleriaPropiedad;

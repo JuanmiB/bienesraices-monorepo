@@ -9,7 +9,7 @@ import { BackButton } from '@shared/components';
 
 const MyPropertiesPage = () => {
     const navigate = useNavigate();
-    const { user, isAuthenticated, loading } = useAuth()
+    const { isAuthenticated, loading } = useAuth()
     const [propiedades, setPropiedades] = useState([])
     const [filteredPropiedades, setFilteredPropiedades] = useState([])
     const [categorias, setCategorias] = useState([])
@@ -72,7 +72,8 @@ const MyPropertiesPage = () => {
             setPropiedades(propiedades)
             setFilteredPropiedades(propiedades)
         }
-        catch {
+        catch (error) {
+            console.error('Error fetching properties:', error);
         }
     }
 
@@ -81,7 +82,8 @@ const MyPropertiesPage = () => {
             const response = await api.get('/api/v1/properties/types')
             setCategorias(response.data.propertyTypes.map(t => ({ id: t.value, name: t.label })))
 
-        } catch {
+        } catch (error) {
+            console.error('Error fetching categories:', error);
         }
     }
 

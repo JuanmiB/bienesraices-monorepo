@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useDropzone } from 'react-dropzone';
 
 /**
  * Componente para mostrar y reemplazar la imagen de una propiedad
- * 
+ *
  * Props:
  * - imagenActual: string | File | null - URL o File de la imagen actual
  * - onImagenChange: function - Callback cuando se sube una nueva imagen
@@ -117,6 +118,12 @@ const ImagenPropiedad = ({ imagenActual, onImagenChange, permitirCambio = true }
       </div>
     </div>
   );
+};
+
+ImagenPropiedad.propTypes = {
+  imagenActual: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(File)]),
+  onImagenChange: PropTypes.func.isRequired,
+  permitirCambio: PropTypes.bool
 };
 
 export default ImagenPropiedad;

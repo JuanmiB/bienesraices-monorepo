@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const MiniPropertyCard = ({ property, onClick, isSelected }) => (
   <div
@@ -28,6 +29,19 @@ const MiniPropertyCard = ({ property, onClick, isSelected }) => (
     </div>
   </div>
 );
+
+MiniPropertyCard.propTypes = {
+  property: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    title: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    currency: PropTypes.string.isRequired,
+    address: PropTypes.string.isRequired,
+    mainImageUrl: PropTypes.string
+  }).isRequired,
+  onClick: PropTypes.func.isRequired,
+  isSelected: PropTypes.bool.isRequired
+};
 
 const MapView = ({ properties, onPropertyClick }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
@@ -85,6 +99,20 @@ const MapView = ({ properties, onPropertyClick }) => {
       </div>
     </div>
   );
+};
+
+MapView.propTypes = {
+  properties: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      title: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      currency: PropTypes.string.isRequired,
+      address: PropTypes.string.isRequired,
+      mainImageUrl: PropTypes.string
+    })
+  ).isRequired,
+  onPropertyClick: PropTypes.func.isRequired
 };
 
 export default MapView;

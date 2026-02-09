@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const PriceRangeSlider = ({ min, max, value, onChange }) => {
   const [localValue, setLocalValue] = useState(value);
@@ -96,6 +97,13 @@ const PriceRangeSlider = ({ min, max, value, onChange }) => {
       />
     </div>
   );
+};
+
+PriceRangeSlider.propTypes = {
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
+  value: PropTypes.arrayOf(PropTypes.number).isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 export default PriceRangeSlider;

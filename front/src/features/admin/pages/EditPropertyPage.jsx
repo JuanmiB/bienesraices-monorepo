@@ -59,7 +59,9 @@ const EditPropertyPage = () => {
           longitude: Number(data.longitude) || 0,
         });
         setImagenes(data.images || []);
-      } catch {
+      } catch (error) {
+        // Error loading property
+        console.error('Error loading property:', error);
       } finally {
         setLoading(false);
       }
@@ -79,7 +81,8 @@ const EditPropertyPage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setStatus("success")
-    } catch {
+    } catch (error) {
+      console.error('Error updating property:', error);
       setStatus("error")
     }
   };

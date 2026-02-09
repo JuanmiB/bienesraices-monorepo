@@ -32,7 +32,8 @@ const CardCategories = () => {
                     name: type.label
                 }));
                 setCategorias(categoriasFormateadas); // Actualizar el estado con el array de objetos
-            } catch {
+            } catch (error) {
+                console.error('Error fetching categories:', error);
             }
             finally {
                 setLoading(false); // Cambiar el estado de `loading` a `false`

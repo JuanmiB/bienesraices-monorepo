@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const FormButton = ({ label, type = "submit", isLoading }) => {
   return (
@@ -14,6 +14,12 @@ const FormButton = ({ label, type = "submit", isLoading }) => {
       {isLoading ? "Cargando..." : label}
     </button>
   );
+};
+
+FormButton.propTypes = {
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  isLoading: PropTypes.bool
 };
 
 export default FormButton;

@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const FormInput = ({ type = "text", placeholder, value, onChange, id, label, hint }) => {
   return (
@@ -23,6 +23,16 @@ const FormInput = ({ type = "text", placeholder, value, onChange, id, label, hin
       {hint && <p className="text-xs text-gray-400 mt-1.5">{hint}</p>}
     </div>
   );
+};
+
+FormInput.propTypes = {
+  type: PropTypes.string,
+  placeholder: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  id: PropTypes.string,
+  label: PropTypes.string,
+  hint: PropTypes.string
 };
 
 export default FormInput;

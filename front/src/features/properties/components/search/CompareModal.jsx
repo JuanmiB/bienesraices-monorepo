@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const CompareRow = ({ label, value }) => (
   <div className="flex justify-between py-2 border-b border-gray-100">
@@ -6,6 +7,11 @@ const CompareRow = ({ label, value }) => (
     <span className="font-semibold text-gray-900">{value}</span>
   </div>
 );
+
+CompareRow.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};
 
 const CompareModal = ({ properties, onClose }) => {
   const navigate = useNavigate();
@@ -116,6 +122,28 @@ const CompareModal = ({ properties, onClose }) => {
       </div>
     </div>
   );
+};
+
+CompareModal.propTypes = {
+  properties: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      title: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      currency: PropTypes.string.isRequired,
+      address: PropTypes.string.isRequired,
+      mainImageUrl: PropTypes.string,
+      propertyType: PropTypes.string.isRequired,
+      operationType: PropTypes.string.isRequired,
+      bedrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      bathrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      totalArea: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      garages: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      yearBuilt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      condition: PropTypes.string
+    })
+  ).isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
 export default CompareModal;

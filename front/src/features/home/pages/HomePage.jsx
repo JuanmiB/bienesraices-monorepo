@@ -5,14 +5,15 @@ import { api } from '@shared/services/api';
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const { data } = await api.get('/api/v1/properties/types');
         setCategories(data.propertyTypes);
-      } catch {
+      } catch (error) {
+        console.error('Error fetching categories:', error);
       } finally {
         setLoading(false);
       }

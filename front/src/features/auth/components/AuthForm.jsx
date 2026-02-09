@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const AuthForm = ({ title, children, onSubmit }) => {
   return (
@@ -16,6 +16,12 @@ const AuthForm = ({ title, children, onSubmit }) => {
       </div>
     </div>
   );
+};
+
+AuthForm.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  onSubmit: PropTypes.func.isRequired
 };
 
 export default AuthForm;
