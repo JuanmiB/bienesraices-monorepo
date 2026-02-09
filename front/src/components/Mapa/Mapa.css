@@ -1,0 +1,34 @@
+/*
+ * Estilos para controlar el z-index del mapa
+ * Asegura que el mapa no se superponga con el header sticky (z-50)
+ */
+
+.leaflet-container,
+.leaflet-pane,
+.leaflet-map-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-tile-pane,
+.leaflet-popup-pane,
+.leaflet-tooltip-pane {
+  z-index: auto !important;
+}
+
+/* Popups y tooltips deben estar visibles pero por debajo del header */
+.leaflet-popup,
+.leaflet-tooltip {
+  z-index: 40 !important;
+}
+
+/* Controles de zoom por debajo del header */
+.leaflet-control-zoom,
+.leaflet-control-attribution {
+  z-index: 40 !important;
+}
+
+/* Asegurar que el contenedor del mapa tenga position relative */
+.leaflet-container {
+  position: relative !important;
+  z-index: 0 !important;
+}

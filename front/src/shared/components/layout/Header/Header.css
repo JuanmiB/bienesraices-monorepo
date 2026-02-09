@@ -1,0 +1,184 @@
+/* Estilos específicos para el Header */
+.site-header {
+	/* fondo semitransparente para dar sensación de capa cuando hay contenido debajo */
+	background-color: var(--color-primary);
+	/* Normalmente estamos usando Tailwind para layout; aquí añadimos mejoras puntuales */
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+}
+
+.logo-link img {
+	display: inline-block;
+}
+
+.nav-links a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.nav-links a:hover {
+	opacity: 0.95;
+}
+
+.avatar-wrapper img {
+	width: 40px;
+	height: 40px;
+	border-radius: 9999px; /* círculo */
+	object-fit: cover;
+	border: 2px solid rgba(255,255,255,0.9);
+}
+
+.avatar-wrapper > div {
+	width: 40px;
+	height: 40px;
+	border-radius: 9999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: white;
+}
+
+/* Estilos para UserMenu Dropdown */
+.user-menu-container {
+	position: relative;
+}
+
+.user-menu-toggle {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.25rem 0.5rem;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	border-radius: 0.5rem;
+	transition: all 0.2s ease;
+}
+
+.user-menu-toggle:hover {
+	opacity: 0.8;
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.user-menu-toggle:focus {
+	outline: 2px solid white;
+	outline-offset: 2px;
+}
+
+.avatar-display {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.avatar-display img {
+	width: 40px;
+	height: 40px;
+	border-radius: 9999px;
+	border: 2px solid rgba(255, 255, 255, 0.9);
+	object-fit: cover;
+	transition: all 0.2s ease;
+}
+
+.user-menu-toggle:hover .avatar-display img {
+	border-color: white;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dropdown menu */
+.user-menu-dropdown {
+	animation: slideDownFade 0.2s ease-out;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideDownFade {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Items del menú - estilos interactivos */
+.user-menu-dropdown li a,
+.user-menu-dropdown li button {
+	transition: all 0.15s ease;
+}
+
+.user-menu-dropdown li a:focus,
+.user-menu-dropdown li button:focus {
+	outline: 2px solid rgba(59, 130, 246, 0.5);
+	outline-offset: -2px;
+}
+
+/* Pequeños ajustes responsive */
+@media (max-width: 768px) {
+	.nav-links { display: none; }
+
+	.user-menu-toggle {
+		padding: 0.125rem 0.25rem;
+	}
+}
+
+/* Botones del Header */
+.btn-outline-white {
+	padding: 0.5rem 1rem;
+	border: 1px solid white;
+	border-radius: 0.375rem;
+	color: white;
+	transition: all 0.2s ease;
+	font-weight: 500;
+}
+
+.btn-outline-white:hover {
+	background: white;
+	color: var(--color-primary);
+}
+
+.btn-solid-white {
+	padding: 0.5rem 1rem;
+	background: white;
+	border-radius: 0.375rem;
+	color: var(--color-primary);
+	font-weight: 600;
+	transition: all 0.2s ease;
+}
+
+.btn-solid-white:hover {
+	background: rgba(255, 255, 255, 0.9);
+	transform: translateY(-1px);
+}
+
+/* Mobile Menu Dropdown */
+.mobile-menu-dropdown {
+	animation: slideDownFade 0.2s ease-out;
+}
+
+.mobile-menu-link {
+	display: block;
+	padding: 0.75rem 0;
+	color: white;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	transition: opacity 0.2s ease;
+}
+
+.mobile-menu-link:hover {
+	opacity: 0.8;
+}
+
+.mobile-menu-link:last-child {
+	border-bottom: none;
+}
+
+/* Hide scrollbar for horizontal categories */
+.scrollbar-hide {
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;  /* Chrome, Safari and Opera */
+}

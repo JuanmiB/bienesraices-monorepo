@@ -1,0 +1,10 @@
+/node_modules
+DS_Storage
+/.env
+.env.example
+API_REFERENCE.md
+IMPROVEMENT_SUMMARY.md
+PRODUCTION_CHECKLIST.md
+SECURITY_CHANGES.md
+.github/
+.vscode/
