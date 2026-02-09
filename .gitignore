@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+
+# Claude Code CLI - configuración local
+.claude/
+.agents/
+
+# Archivos de entorno — nunca comitear
+.env
+.env.local
+.env.development
+.env.production
