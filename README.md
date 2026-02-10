@@ -9,6 +9,7 @@
 [![Monorepo](https://img.shields.io/badge/Monorepo-npm_workspaces-CB3837?style=flat&logo=npm&logoColor=white)](https://docs.npmjs.com/cli/v7/using-npm/workspaces)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Shared_Types-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33?style=flat&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 [🌐 Demo en Vivo](#) | [📹 Video Demo](#) | [📝 Documentación](CLAUDE.md)
 
