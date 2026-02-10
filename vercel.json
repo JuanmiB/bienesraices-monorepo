@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build -w @bienesraices/frontend",
   "outputDirectory": "apps/frontend/dist",
-  "installCommand": "npm install --include=optional && npm rebuild",
+  "installCommand": "npm ci --include=optional || npm install --include=optional",
   "framework": null,
   "rewrites": [
     {
