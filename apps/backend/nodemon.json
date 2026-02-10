@@ -1,0 +1,13 @@
+{
+  "watch": [
+    ".",
+    "../../packages/shared-types/src",
+    "../../packages/shared-utils/src"
+  ],
+  "ext": "js,json,ts",
+  "ignore": [
+    "node_modules",
+    "*.test.js"
+  ],
+  "exec": "node server.js"
+}

@@ -1,0 +1,26 @@
+{
+  "name": "bienesraices-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"frontend,backend\" -c \"cyan,green\" \"npm run dev -w @bienesraices/frontend\" \"npm run dev -w @bienesraices/backend\"",
+    "dev:frontend": "npm run dev -w @bienesraices/frontend",
+    "dev:backend": "npm run dev -w @bienesraices/backend",
+    "build": "npm run build --workspaces --if-present",
+    "build:frontend": "npm run build -w @bienesraices/frontend",
+    "test": "npm run test --workspaces --if-present",
+    "test:frontend": "npm run test -w @bienesraices/frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
+    "install:all": "npm install",
+    "typecheck": "tsc --noEmit -p packages/shared-types/tsconfig.json"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  }
+}

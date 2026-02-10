@@ -1,0 +1,13 @@
+{
+  "name": "@bienesraices/shared-utils",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./validation": "./src/validation.js",
+    "./formatters": "./src/formatters.js",
+    "./constants": "./src/constants.js"
+  }
+}

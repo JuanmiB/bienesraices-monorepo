@@ -1,5 +1,5 @@
 {
-  "name": "front",
+  "name": "@bienesraices/frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -23,7 +23,9 @@
     "react-dropzone": "^14.3.5",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.27.0",
-    "react-spinners": "^0.15.0"
+    "react-spinners": "^0.15.0",
+    "@bienesraices/shared-types": "*",
+    "@bienesraices/shared-utils": "*"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

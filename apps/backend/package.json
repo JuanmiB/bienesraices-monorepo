@@ -1,12 +1,13 @@
 {
-  "name": "back",
+  "name": "@bienesraices/backend",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
     "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "db:importar": "node ./seed/seeder.js -i",
     "db:eliminar": "node ./seed/seeder.js -e"
   },
@@ -36,9 +37,12 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "sequelize": "^6.37.4",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@bienesraices/shared-types": "*",
+    "@bienesraices/shared-utils": "*"
   },
   "devDependencies": {
-    "standard": "^17.1.2"
+    "standard": "^17.1.2",
+    "nodemon": "^3.0.2"
   }
 }

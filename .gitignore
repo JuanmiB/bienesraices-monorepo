@@ -1,12 +1,51 @@
+# Dependencies
 node_modules/
+apps/*/node_modules/
+packages/*/node_modules/
+
+# OS files
 .DS_Store
+Thumbs.db
 
 # Claude Code CLI - configuración local
 .claude/
 .agents/
 
-# Archivos de entorno — nunca comitear
+# Environment files
 .env
 .env.local
 .env.development
 .env.production
+apps/*/.env
+apps/*/.env.local
+
+# Build outputs
+dist/
+build/
+apps/*/dist/
+apps/*/build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+apps/*/coverage/
+
+# Temporary files
+*.tmp
+.cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Uploads (backend)
+apps/backend/public/uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

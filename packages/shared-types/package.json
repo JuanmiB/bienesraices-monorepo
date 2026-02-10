@@ -1,0 +1,14 @@
+{
+  "name": "@bienesraices/shared-types",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./property": "./src/property.ts",
+    "./user": "./src/user.ts",
+    "./auth": "./src/auth.ts",
+    "./categoria": "./src/categoria.ts"
+  }
+}
