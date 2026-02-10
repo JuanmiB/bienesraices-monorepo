@@ -1,6 +1,7 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import PropTypes from "prop-types";
 import { api } from "@shared/services/api";
+import { ERROR_MESSAGES } from "@bienesraices/shared-utils/constants";
 
 export const AuthContext = createContext();
 
@@ -75,7 +76,7 @@ export const AuthProvider = ({ children }) => {
           });
           setIsAuthenticated(false);
         } catch (error) {
-          setError(error.response ? error.response.data : 'Error desconocido');
+          setError(error.response ? error.response.data : ERROR_MESSAGES.SERVER_ERROR);
         } finally {
           setLoading(false);
         }

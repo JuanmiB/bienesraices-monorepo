@@ -4,20 +4,28 @@ import jwt from 'jsonwebtoken'
 import { sendRecoveryEmail, sendVerificationEmail } from '../services/email.js'
 import { generateSecureToken } from '../helpers/email.js'
 import { logger } from '../helpers/logger.js'
+import { ERROR_MESSAGES } from '@bienesraices/shared-utils/constants'
+import { isValidEmail } from '@bienesraices/shared-utils/validation'
 
 export const authentication = async (req, res) => {
   // Extraigo email y password del body
   const { email, password } = req.body
+
+  // Validar formato de email
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ message: ERROR_MESSAGES.VALIDATION_ERROR })
+  }
+
   try {
     // Buscar usuario por email usando método estático
     const user = await User.findByEmail(email)
     if (!user) {
-      return res.status(401).json({ message: 'Credenciales inválidas' })
+      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_CREDENTIALS })
     }
     // Verificar contraseña (si no usa Google login)
     const isPasswordValid = await user.verifyPassword(password)
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Credenciales inválidas' })
+      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_CREDENTIALS })
     }
     // Actualizar última sesión
     await user.updateLastSession()
@@ -46,7 +54,7 @@ export const authentication = async (req, res) => {
     })
   } catch (error) {
     logger.error('Error en el proceso de autenticación', { error: error.message, email })
-    res.status(500).json({ message: 'Error interno del servidor' })
+    res.status(500).json({ message: ERROR_MESSAGES.SERVER_ERROR })
   }
 }
 // authController.js
@@ -54,7 +62,7 @@ export const verifyAuth = async (req, res) => {
   const token = req.cookies ? req.cookies._token : null
 
   if (!token) {
-    return res.status(401).json({ message: 'No autenticado' })
+    return res.status(401).json({ message: ERROR_MESSAGES.UNAUTHORIZED })
   }
 
   try {
