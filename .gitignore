@@ -19,6 +19,11 @@ Thumbs.db
 apps/*/.env
 apps/*/.env.local
 
+# Except .env.example files (these should be committed)
+!.env.example
+!apps/*/.env.example
+!packages/*/.env.example
+
 # Build outputs
 dist/
 build/
@@ -33,6 +38,11 @@ npm-debug.log*
 # Test coverage
 coverage/
 apps/*/coverage/
+
+# Playwright
+apps/*/test-results/
+apps/*/playwright-report/
+apps/*/playwright/.cache/
 
 # Temporary files
 *.tmp
