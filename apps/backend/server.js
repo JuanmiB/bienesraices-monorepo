@@ -31,7 +31,13 @@ app.use(urlencoded({ extended: true, limit: '10mb' }))
 const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '')
 const corsOptions = {
   origin: (origin, callback) => {
-    if (origin && origin.replace(/\/+$/, '') === frontendUrl) {
+    // Permitir peticiones sin origin (health checks, curl, Postman, etc.)
+    if (!origin) {
+      return callback(null, true)
+    }
+
+    // Permitir peticiones desde el frontend configurado
+    if (origin.replace(/\/+$/, '') === frontendUrl) {
       return callback(null, true)
     }
 
