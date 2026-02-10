@@ -6,6 +6,9 @@
 [![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Monorepo](https://img.shields.io/badge/Monorepo-npm_workspaces-CB3837?style=flat&logo=npm&logoColor=white)](https://docs.npmjs.com/cli/v7/using-npm/workspaces)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Shared_Types-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33?style=flat&logo=playwright&logoColor=white)](https://playwright.dev/)
 
 [🌐 Demo en Vivo](#) | [📹 Video Demo](#) | [📝 Documentación](CLAUDE.md)
 
@@ -106,6 +109,11 @@
 
 ## 🛠️ Tech Stack
 
+### 🏗️ Arquitectura
+- **Monorepo:** npm workspaces
+- **Shared Packages:** TypeScript types, utils compartidos, ESLint config
+- **Code Organization:** Apps separadas con código compartido
+
 ### Frontend
 - **Framework:** React 18.3.1
 - **Build Tool:** Vite 5.4
@@ -115,6 +123,7 @@
 - **Icons:** Lucide React
 - **State Management:** Context API + Hooks
 - **Forms:** React Hook Form (ready)
+- **E2E Testing:** Playwright (Chromium, Firefox, WebKit, Mobile)
 
 ### Backend
 - **Runtime:** Node.js 20.x
@@ -127,12 +136,61 @@
 - **File Upload:** Multer
 - **Validation:** Express Validator
 
+### Shared Packages
+- **@bienesraices/shared-types:** Interfaces TypeScript compartidas
+- **@bienesraices/shared-utils:** Utilidades JavaScript (validación, formateo, constantes)
+- **@bienesraices/eslint-config:** Configuración ESLint unificada
+
 ### DevOps & Tools
 - **Version Control:** Git
-- **Package Manager:** npm
-- **Linting:** ESLint
+- **Package Manager:** npm workspaces
+- **Linting:** ESLint (compartido en monorepo)
 - **Code Formatting:** Prettier (ready)
 - **Environment:** dotenv
+- **CI/CD:** GitHub Actions (ready)
+
+---
+
+## 🏗️ Arquitectura de Monorepo
+
+Este proyecto utiliza **npm workspaces** para gestionar un monorepo moderno con código compartido:
+
+### ¿Por qué Monorepo?
+
+✅ **Código compartido sin duplicación** - Types, utils y configs unificados
+✅ **Gestión de dependencias centralizada** - Un solo `npm install`
+✅ **Type safety** - TypeScript interfaces compartidas entre frontend y backend
+✅ **Consistencia** - Mismas reglas de ESLint en todo el proyecto
+✅ **Desarrollo eficiente** - Cambios en shared packages se reflejan inmediatamente
+
+### Shared Packages
+
+**@bienesraices/shared-types** (TypeScript)
+```typescript
+import { Property, User, AuthResponse } from '@bienesraices/shared-types';
+```
+- Interfaces para Property, User, Auth, etc.
+- Type safety entre frontend y backend
+- Single source of truth para modelos de datos
+
+**@bienesraices/shared-utils** (JavaScript)
+```javascript
+import { isValidEmail, formatPrice, ERROR_MESSAGES } from '@bienesraices/shared-utils';
+```
+- Validación de email y passwords
+- Formateo de precios y fechas
+- Constantes compartidas (ERROR_MESSAGES, PAGINATION, etc.)
+
+**@bienesraices/eslint-config**
+- Configuración ESLint unificada
+- Reglas consistentes en todo el monorepo
+
+### Ventajas Técnicas
+
+- **Hot Module Reload automático**: Nodemon detecta cambios en packages
+- **Path aliases**: Vite resuelve imports de shared packages
+- **TypeScript checking**: `npm run typecheck` valida tipos compartidos
+- **Build optimizado**: Vite incluye solo código usado de packages
 
 ---
 
@@ -149,6 +207,7 @@
 - [Color palette guide](docs/COLORS.md)
 - [Detailed project report](docs/INFORME_PROYECTO.md)
 - [Portfolio deployment checklist](docs/PORTFOLIO_CHECKLIST.md)
+- [Monorepo migration guide](MONOREPO_SETUP_PERSONALIZADO.md)
 
 ---
 
@@ -167,35 +226,29 @@ git clone https://github.com/tu-usuario/02-bienesraices-react.git
 cd 02-bienesraices-react
 ```
 
-### Setup Frontend
+### 🚀 Setup del Monorepo (Recomendado)
+
+Este proyecto usa **npm workspaces** para gestionar el monorepo. Instala todas las dependencias desde la raíz:
 
 ```bash
-cd front
+# Instalar todas las dependencias (root, frontend, backend, packages)
 npm install
+
+# Instalar navegadores de Playwright para E2E testing
+npx playwright install
 ```
 
-Crear archivo `.env` en la carpeta `front/`:
+### Configurar Frontend
+
+Crear archivo `.env` en `apps/frontend/`:
 
 ```env
 VITE_API_URL=http://localhost:3000
 ```
 
-Iniciar desarrollo:
+### Configurar Backend
 
-```bash
-npm run dev
-```
-
-La aplicación estará disponible en `http://localhost:5173`
-
-### Setup Backend
-
-```bash
-cd back
-npm install
-```
-
-Crear archivo `.env` en la carpeta `back/`:
+Crear archivo `.env` en `apps/backend/`:
 
 ```env
 # Server
@@ -234,93 +287,121 @@ Crear base de datos:
 createdb bienesraices_db
 ```
 
-Ejecutar migraciones:
+Ejecutar migraciones (desde la raíz del proyecto):
 
 ```bash
-npm run migrate
+npm run migrate -w @bienesraices/backend
 ```
 
 Seed data (opcional):
 
 ```bash
-npm run seed
+npm run seed -w @bienesraices/backend
 ```
 
-Iniciar servidor:
+### 🎯 Ejecutar la Aplicación
 
+**Opción 1: Ejecutar todo junto (Recomendado)**
 ```bash
-npm start        # Producción
-npm run dev      # Desarrollo con nodemon
+# Desde la raíz - inicia frontend y backend en paralelo
+npm run dev
 ```
 
-El servidor estará disponible en `http://localhost:3000`
+**Opción 2: Ejecutar por separado**
+```bash
+# Terminal 1 - Frontend
+npm run dev -w @bienesraices/frontend
+
+# Terminal 2 - Backend
+npm run dev -w @bienesraices/backend
+```
+
+**URLs:**
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:3000`
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📁 Estructura del Proyecto (Monorepo)
 
 ```
 02-bienesraices-react/
-├── front/                          # Aplicación React
-│   ├── public/
-│   └── src/
-│       ├── components/             # Componentes reutilizables
-│       │   ├── Footer/
-│       │   ├── Header/             # Navbar con categorías
-│       │   ├── FormularioContacto/
-│       │   └── LogoUploader/       # Drag & drop uploader
-│       ├── context/                # Context API
-│       │   └── AuthContext.jsx
-│       ├── pages/                  # Páginas/Rutas
-│       │   ├── Inicio/
-│       │   ├── Propiedades/        # Búsqueda y filtros
-│       │   │   └── components/     # Componentes premium
-│       │   │       ├── SearchToolbar.jsx
-│       │   │       ├── FilterPanel.jsx
-│       │   │       ├── PropertyCardPremium.jsx
-│       │   │       ├── QuickViewModal.jsx
-│       │   │       └── CompareModal.jsx
-│       │   ├── Propiedad/          # Detalles
-│       │   │   └── components/
-│       │   │       └── GaleriaPropiedad.jsx
-│       │   ├── Admin/              # Panel administración
-│       │   │   ├── MisPropiedades.jsx
-│       │   │   ├── CrearPropiedad.jsx
-│       │   │   └── EditarPropiedad.jsx
-│       │   ├── Perfil/
-│       │   └── auth/               # Login, registro, etc
-│       ├── routes/                 # Configuración de rutas
-│       │   ├── AppRouter.jsx       # Lazy loading implementado
-│       │   └── PrivateRoute.jsx
+├── apps/
+│   ├── frontend/                   # ⚛️ Aplicación React
+│   │   ├── e2e/                    # Tests End-to-End con Playwright
+│   │   │   ├── home.spec.js
+│   │   │   ├── auth.spec.js
+│   │   │   ├── properties.spec.js
+│   │   │   └── README.md
+│   │   ├── public/
+│   │   ├── src/
+│   │   │   ├── components/         # Componentes reutilizables
+│   │   │   │   ├── Footer/
+│   │   │   │   ├── Header/
+│   │   │   │   └── FormularioContacto/
+│   │   │   ├── features/           # Features organizadas
+│   │   │   │   ├── auth/
+│   │   │   │   │   ├── components/
+│   │   │   │   │   ├── context/
+│   │   │   │   │   └── pages/
+│   │   │   │   └── properties/
+│   │   │   │       ├── components/
+│   │   │   │       └── pages/
+│   │   │   ├── routes/
+│   │   │   │   ├── AppRouter.jsx
+│   │   │   │   └── PrivateRoute.jsx
+│   │   │   ├── utils/
+│   │   │   ├── App.jsx
+│   │   │   └── main.jsx
+│   │   ├── playwright.config.js
+│   │   └── package.json
+│   │
+│   └── backend/                    # 🔧 API REST
+│       ├── config/
+│       │   ├── db.js
+│       │   └── cloudinary.js
+│       ├── controllers/
+│       │   ├── authController.js
+│       │   ├── propertyController.js
+│       │   └── userController.js
+│       ├── middleware/
+│       ├── models/
+│       ├── routes/
 │       ├── utils/
-│       │   └── axiosConfig.js
-│       ├── App.jsx
-│       └── main.jsx
+│       ├── nodemon.json            # Monitorea cambios en shared packages
+│       ├── server.js
+│       └── package.json
 │
-├── back/                           # API REST
-│   ├── config/
-│   │   ├── db.js
-│   │   └── cloudinary.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── propertyController.js
-│   │   └── userController.js
-│   ├── middleware/
-│   │   ├── auth.js
-│   │   └── uploadImages.js
-│   ├── models/
-│   │   ├── User.js
-│   │   ├── Property.js
-│   │   └── Image.js
-│   ├── routes/
-│   │   ├── authRoutes.js
-│   │   ├── propertyRoutes.js
-│   │   └── userRoutes.js
-│   ├── utils/
-│   │   ├── email.js
-│   │   └── generateJWT.js
-│   └── server.js
+├── packages/                       # 📦 Código compartido
+│   ├── shared-types/               # TypeScript interfaces
+│   │   ├── src/
+│   │   │   ├── property.ts
+│   │   │   ├── user.ts
+│   │   │   ├── auth.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── package.json
+│   │
+│   ├── shared-utils/               # Utilidades JavaScript
+│   │   ├── src/
+│   │   │   ├── validation.js       # Validación de email, passwords
+│   │   │   ├── formatters.js       # Formateo de precios, fechas
+│   │   │   ├── constants.js        # Constantes compartidas
+│   │   │   └── index.js
+│   │   └── package.json
+│   │
+│   └── eslint-config/              # Configuración ESLint compartida
+│       ├── index.js
+│       └── package.json
 │
+├── docs/                           # 📚 Documentación adicional
+│   ├── COLORS.md
+│   ├── INFORME_PROYECTO.md
+│   └── PORTFOLIO_CHECKLIST.md
+│
+├── package.json                    # Configuración raíz del workspace
+├── CLAUDE.md                       # Documentación técnica completa
+├── MONOREPO_SETUP_PERSONALIZADO.md # Guía de migración
 └── README.md
 ```
 
@@ -328,24 +409,88 @@ El servidor estará disponible en `http://localhost:3000`
 
 ## 🎮 Scripts Disponibles
 
-### Frontend (`front/`)
+### Monorepo (Desde la raíz)
 
 ```bash
-npm run dev          # Iniciar servidor desarrollo (Vite)
-npm run build        # Build para producción
-npm run preview      # Preview del build
-npm run lint         # Ejecutar ESLint
+# Ejecutar ambos (frontend + backend) en paralelo
+npm run dev
+
+# Type checking para shared-types
+npm run typecheck
+
+# Linting en todo el monorepo
+npm run lint -w @bienesraices/frontend
 ```
 
-### Backend (`back/`)
+### Frontend (apps/frontend/)
 
 ```bash
-npm start            # Iniciar servidor producción
-npm run dev          # Desarrollo con nodemon
-npm run migrate      # Ejecutar migraciones
-npm run seed         # Insertar datos de prueba
-npm test             # Ejecutar tests (si están configurados)
+# Desde la raíz usando workspaces
+npm run dev -w @bienesraices/frontend           # Dev server con Vite
+npm run build -w @bienesraices/frontend         # Build producción
+npm run preview -w @bienesraices/frontend       # Preview del build
+
+# E2E Tests con Playwright
+npm run test:e2e -w @bienesraices/frontend      # Ejecutar tests
+npm run test:e2e:ui -w @bienesraices/frontend   # Modo UI interactivo
+npm run test:e2e:debug -w @bienesraices/frontend # Debug paso a paso
+npm run test:e2e:report -w @bienesraices/frontend # Ver reporte HTML
 ```
+
+### Backend (apps/backend/)
+
+```bash
+# Desde la raíz usando workspaces
+npm run dev -w @bienesraices/backend     # Desarrollo con nodemon
+npm start -w @bienesraices/backend       # Servidor producción
+npm run migrate -w @bienesraices/backend # Ejecutar migraciones
+npm run seed -w @bienesraices/backend    # Insertar datos de prueba
+```
+
+### Shared Packages
+
+```bash
+# Los cambios en packages se detectan automáticamente
+# gracias a nodemon.json en el backend
+```
+
+---
+
+## 🧪 Testing
+
+### E2E Testing con Playwright
+
+Este proyecto incluye una suite completa de tests End-to-End usando Playwright:
+
+```bash
+# Ejecutar todos los tests
+npm run test:e2e -w @bienesraices/frontend
+
+# Modo UI interactivo (recomendado)
+npm run test:e2e:ui -w @bienesraices/frontend
+
+# Debug paso a paso
+npm run test:e2e:debug -w @bienesraices/frontend
+
+# Ver reporte HTML con screenshots
+npm run test:e2e:report -w @bienesraices/frontend
+```
+
+**Tests Incluidos:**
+- ✅ **home.spec.js** - Navegación principal y categorías
+- ✅ **auth.spec.js** - Login, registro, recuperación de contraseña
+- ✅ **properties.spec.js** - Búsqueda, filtros, detalles de propiedades
+
+**Navegadores Testeados:**
+- Chromium (Chrome, Edge)
+- Firefox
+- WebKit (Safari)
+- Mobile Chrome
+- Mobile Safari
+
+**18 tests × 5 navegadores = 90 test cases totales**
+
+Para más detalles, ver [apps/frontend/e2e/README.md](apps/frontend/e2e/README.md)
 
 ---
 
@@ -392,11 +537,14 @@ PUT    /api/v1/users/avatar           # Subir avatar (auth)
 - [x] Responsive design
 - [x] Code splitting y optimización
 - [x] Accesibilidad WCAG AA
+- [x] **Arquitectura de monorepo con npm workspaces**
+- [x] **Shared packages (types, utils, eslint)**
+- [x] **E2E testing con Playwright**
+- [x] **18 tests E2E en 5 navegadores**
 
-### 🚧 En Progreso (v1.1)
+### 🚧 En Progreso (v1.2)
+- [ ] Ajustar tests E2E a implementación actual
 - [ ] Sistema de favoritos persistente
-- [ ] Notificaciones en tiempo real
-- [ ] Chat entre usuarios
 - [ ] Mapa con Mapbox/Google Maps
 
 ### 🔮 Futuro (v2.0)
@@ -464,10 +612,13 @@ Si encuentras un bug, por favor [abre un issue](https://github.com/tu-usuario/02
 - **Chunks:** 13+ chunks optimizados
 
 ### Código
-- **Líneas de código:** ~6,500
+- **Arquitectura:** Monorepo con npm workspaces
+- **Líneas de código:** ~8,000+ (incluyendo shared packages)
 - **Componentes React:** 60+
 - **Páginas:** 12
 - **API Endpoints:** 15+
+- **Shared Packages:** 3 (types, utils, eslint)
+- **E2E Tests:** 18 tests × 5 navegadores = 90 test cases
 
 ---
 
@@ -475,16 +626,27 @@ Si encuentras un bug, por favor [abre un issue](https://github.com/tu-usuario/02
 
 Este proyecto fue desarrollado como parte de mi aprendizaje en desarrollo full-stack y demuestra competencias en:
 
+### Frontend
 - ✅ React avanzado (Hooks, Context, Lazy Loading)
 - ✅ Arquitectura de aplicaciones SPA
-- ✅ RESTful API design
-- ✅ Autenticación y autorización
-- ✅ Manejo de estado complejo
+- ✅ Responsive design y UI/UX moderno
 - ✅ Optimización de performance
-- ✅ Accesibilidad web (WCAG)
-- ✅ Responsive design
-- ✅ UI/UX moderno
+- ✅ Accesibilidad web (WCAG AA)
+
+### Backend
+- ✅ RESTful API design
+- ✅ Autenticación y autorización con JWT
+- ✅ Bases de datos relacionales (PostgreSQL)
+- ✅ ORM (Sequelize)
+
+### Arquitectura y DevOps
+- ✅ **Monorepo con npm workspaces**
+- ✅ **Código compartido entre aplicaciones**
+- ✅ **TypeScript para type safety**
+- ✅ **E2E testing con Playwright**
+- ✅ **Multi-browser testing**
 - ✅ Git y control de versiones
+- ✅ Organización de código escalable
 
 ### Artículos Relacionados
 - [Cómo optimicé el bundle de React en 60%](#)
