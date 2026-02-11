@@ -74,6 +74,30 @@ try {
   process.exit(1)
 }
 
+// TEMPORAL: Endpoint para seedear la base de datos
+// Visita /api/seed-database?secret=TEMP_SEED_2024 para ejecutarlo
+// TODO: ELIMINAR ESTE ENDPOINT DESPUÉS DE USARLO
+app.get('/api/seed-database', async (req, res) => {
+  try {
+    if (req.query.secret !== 'TEMP_SEED_2024') {
+      return res.status(403).json({ error: 'No autorizado' })
+    }
+
+    // Importar y ejecutar el seeder (sin cerrar la conexión)
+    const { importarDatos } = await import('./seed/seeder.js')
+    await importarDatos(false)
+
+    logger.info('Base de datos seeded exitosamente')
+    res.json({
+      success: true,
+      message: 'Base de datos poblada con éxito. IMPORTANTE: Elimina este endpoint ahora.'
+    })
+  } catch (error) {
+    logger.error('Error al seedear la base de datos', { error: error.message })
+    res.status(500).json({ error: 'Error al poblar la base de datos', details: error.message })
+  }
+})
+
 // Health & API v1
 app.use('/api/health', healthRouter)
 app.use('/api/v1', v1Router)

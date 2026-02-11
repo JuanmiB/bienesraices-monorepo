@@ -457,7 +457,7 @@ const imagesData = propertiesData.flatMap((_, index) => {
 })
 
 // ─── Importar datos ───────────────────────────────────────────
-const importarDatos = async () => {
+const importarDatos = async (closeConnection = true) => {
   try {
     await db.authenticate()
     await db.sync()
@@ -471,9 +471,12 @@ const importarDatos = async () => {
     console.log(`Datos insertados: ${usersData.length} usuarios, ${propertiesData.length} propiedades, ${imagesData.length} imágenes`)
   } catch (error) {
     console.error('Error al insertar datos:', error)
+    throw error
   } finally {
-    await db.close()
-    exit()
+    if (closeConnection) {
+      await db.close()
+      exit()
+    }
   }
 }
 
@@ -521,4 +524,10 @@ const main = () => {
   }
 }
 
-main()
+// Exportar funciones para uso en endpoints
+export { importarDatos, eliminarDatos }
+
+// Solo ejecutar main si se llama directamente desde CLI
+if (process.argv[1] && process.argv[1].includes('seeder.js')) {
+  main()
+}
