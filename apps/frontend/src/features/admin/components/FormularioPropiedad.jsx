@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import MapComponent from "../../../components/Mapa/Mapa";
+import { Map as MapComponent } from "@shared/components/Map";
 import { api } from "@shared/services/api";
 import { getAddress } from "@shared/utils";
 

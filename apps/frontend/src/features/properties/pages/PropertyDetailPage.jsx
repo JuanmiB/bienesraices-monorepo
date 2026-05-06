@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Footer } from "@shared/components/layout";
 import { BackButton } from "@shared/components";
-import FormularioContacto from "../../../components/FormularioContacto/FormularioContacto";
 import {
   GaleriaPropiedad,
   TarjetaVendedor,
   PropiedadInfo,
   PropiedadDescripcion,
-  PropiedadMapa
+  PropiedadMapa,
+  PropertyContactForm
 } from "../components/detail";
 import { api } from "@shared/services/api";
 import { useAuth } from "@features/auth/context";
@@ -74,7 +74,7 @@ const PropertyDetailPage = () => {
             {user?.id !== result.owner?.id && (
               <div className="flex flex-col gap-4 mt-4 customlg:mt-0">
                 <TarjetaVendedor owner={result.owner} />
-                <FormularioContacto propertyId={id} />
+                <PropertyContactForm propertyId={id} />
               </div>
             )}
           </div>

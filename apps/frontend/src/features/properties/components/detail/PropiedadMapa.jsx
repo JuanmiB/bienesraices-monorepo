@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import MapComponent from "../../../../components/Mapa/Mapa";
+import { Map as MapComponent } from "@shared/components/Map";
 import { MapPin } from 'lucide-react';
 
 const PropiedadMapa = ({ lat, lng }) => {

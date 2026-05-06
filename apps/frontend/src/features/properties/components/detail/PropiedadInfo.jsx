@@ -1,6 +1,6 @@
 // PropiedadInfo.js
 import PropTypes from 'prop-types';
-import { Baños, Cochera, Dormitorio, MetrosTotal } from "../../../../icons/icon";
+import { Baños, Cochera, Dormitorio, MetrosTotal } from "@shared/assets/icons/icon";
 
 const PropiedadInfo = ({ title, price, currency, address, bedrooms, bathrooms, garages, totalArea }) => (
   <div className="p-6 border-2 rounded bg-slate-100 h-fit md:hover:border-blue-600">

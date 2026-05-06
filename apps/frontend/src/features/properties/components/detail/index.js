@@ -4,3 +4,4 @@ export { default as PropiedadImagen } from './PropiedadImagen';
 export { default as PropiedadInfo } from './PropiedadInfo';
 export { default as PropiedadMapa } from './PropiedadMapa';
 export { default as TarjetaVendedor } from './TarjetaVendedor';
+export { default as PropertyContactForm } from './PropertyContactForm';

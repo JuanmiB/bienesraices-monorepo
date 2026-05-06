@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { House, Terrain, Market, Garage, Offices, Department } from '../../../icons/icon';
+import { House, Terrain, Market, Garage, Offices, Department } from '@shared/assets/icons/icon';
 import { api } from '@shared/services/api';
 
 const iconMapping = {

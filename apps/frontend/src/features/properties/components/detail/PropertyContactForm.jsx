@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { api } from "@shared/services/api";
 
-const FormularioContacto = ({ propertyId }) => {
+const PropertyContactForm = ({ propertyId }) => {
     const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
     const [status, setStatus] = useState(null); // null | "success" | "error"
     const [loading, setLoading] = useState(false);
@@ -108,11 +108,11 @@ const FormularioContacto = ({ propertyId }) => {
     );
 };
 
-FormularioContacto.propTypes = {
+PropertyContactForm.propTypes = {
     propertyId: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
     ]).isRequired
 };
 
-export default FormularioContacto
+export default PropertyContactForm
