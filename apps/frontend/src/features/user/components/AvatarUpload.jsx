@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Camera, Upload, X } from 'lucide-react';
+import { useToast } from '@shared/components/feedback';
 
 /**
  * Componente para subir y previsualizar foto de perfil
@@ -9,6 +10,7 @@ const AvatarUpload = ({ currentAvatar, onImageSelect, onImageRemove }) => {
   const [preview, setPreview] = useState(currentAvatar);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const toast = useToast();
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -20,13 +22,13 @@ const AvatarUpload = ({ currentAvatar, onImageSelect, onImageRemove }) => {
   const processFile = (file) => {
     // Validar tipo de archivo
     if (!file.type.startsWith('image/')) {
-      alert('Por favor selecciona un archivo de imagen válido');
+      toast.error('Por favor selecciona un archivo de imagen válido');
       return;
     }
 
     // Validar tamaño (máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('La imagen no debe superar los 5MB');
+      toast.error('La imagen no debe superar los 5MB');
       return;
     }
 

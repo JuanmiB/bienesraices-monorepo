@@ -4,6 +4,7 @@ import { useAuth } from '@features/auth/context';
 import { AuthForm } from "@features/auth/components";
 import { FormInput } from "@features/auth/components";
 import { FormButton } from "@features/auth/components";
+import * as logger from '@shared/utils/logger';
 
 const ForgotPasswordPage = () => {
   const { recoverPassword, error, loading } = useAuth();
@@ -16,8 +17,8 @@ const ForgotPasswordPage = () => {
     try {
       await recoverPassword(email);
       setIsSuccess(true);
-    } catch (error) {
-      console.error('Error recovering password:', error);
+    } catch (err) {
+      logger.error('Error recovering password:', err);
     }
   };
 

@@ -1,10 +1,12 @@
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { setPrimaryImage, deleteImage, addImages } from '../services';
+import { useToast } from '@shared/components/feedback';
 
 const GaleriaAdmin = ({ propertyId, images: initialImages, onImagesChange }) => {
   const [images, setImages] = useState(initialImages || []);
   const fileInputRef = useRef(null);
+  const toast = useToast();
 
   const updateState = (newImages) => {
     setImages(newImages);
@@ -16,7 +18,7 @@ const GaleriaAdmin = ({ propertyId, images: initialImages, onImagesChange }) => 
       await setPrimaryImage(propertyId, imageId);
       updateState(images.map(img => ({ ...img, isPrimary: img.id === imageId })));
     } catch {
-      alert('Error al cambiar la imagen principal.');
+      toast.error('Error al cambiar la imagen principal.');
     }
   };
 
@@ -26,7 +28,7 @@ const GaleriaAdmin = ({ propertyId, images: initialImages, onImagesChange }) => 
       await deleteImage(propertyId, imageId);
       updateState(images.filter(img => img.id !== imageId));
     } catch {
-      alert('Error al eliminar la imagen.');
+      toast.error('Error al eliminar la imagen.');
     }
   };
 
@@ -40,7 +42,7 @@ const GaleriaAdmin = ({ propertyId, images: initialImages, onImagesChange }) => 
       const updated = await addImages(propertyId, toUpload);
       updateState(updated);
     } catch {
-      alert('Error al agregar imágenes.');
+      toast.error('Error al agregar imágenes.');
     }
   };
 

@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Footer } from "@shared/components/layout";
 import { BackButton } from "@shared/components";
+import { Spinner } from "@shared/components/feedback";
 import {
   GaleriaPropiedad,
   TarjetaVendedor,
@@ -22,7 +23,7 @@ const PropertyDetailPage = () => {
     enabled: Boolean(id),
   });
 
-  if (loading) return <p className="text-center my-12 text-gray-500">Cargando...</p>;
+  if (loading) return <Spinner fullScreen label="Cargando..." />;
 
   return (
     <>

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyPropertyById, updateProperty } from '../services';
 import { useForm } from '@shared/hooks';
 import { BackButton } from '@shared/components';
+import { Spinner } from '@shared/components/feedback';
 import { FormularioPropiedad, GaleriaAdmin } from '../components';
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -75,7 +76,7 @@ const EditPropertyPage = () => {
 
   const onSubmit = (data) => updateMutation.mutate(data);
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <Spinner fullScreen label="Cargando..." />;
 
   if (status === "success") {
     return (

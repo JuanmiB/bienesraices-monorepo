@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Map as MapComponent } from "@shared/components/Map";
 import { usePropertyTypes } from "@features/properties/hooks";
 import { getAddress } from "@shared/utils";
+import * as logger from "@shared/utils/logger";
 
 export const FormularioPropiedad = ({ values, handleChange, handleSubmit, handleLatLng, handleGeoData, onSubmit, isEditable, submitLabel = 'Publicar' }) => {
     const { data, isLoading: loading } = usePropertyTypes();
@@ -31,9 +32,8 @@ export const FormularioPropiedad = ({ values, handleChange, handleSubmit, handle
             try {
                 const data = await getAddress(values.latitude, values.longitude)
                 handleGeoData(data.address.road, data.address.city, data.address.state)
-            } catch (error) {
-                // Error al obtener dirección desde coordenadas (servicio de geocoding no disponible)
-                console.error('Error fetching address:', error);
+            } catch (err) {
+                logger.error('Error fetching address:', err);
             }
         }
         if (values.latitude && values.longitude) {

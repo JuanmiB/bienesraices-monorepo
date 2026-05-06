@@ -4,6 +4,7 @@ import { useAuth } from '@features/auth/context';
 import { AuthForm } from "@features/auth/components";
 import { FormInput } from "@features/auth/components";
 import { FormButton } from "@features/auth/components";
+import * as logger from '@shared/utils/logger';
 
 const ResetPasswordPage = () => {
   const { resetPassword, error, setError, loading } = useAuth();
@@ -28,8 +29,8 @@ const ResetPasswordPage = () => {
     try{
         await resetPassword(password, token);
         setIsSuccess(true);
-    } catch (error) {
-        console.error('Error resetting password:', error);
+    } catch (err) {
+        logger.error('Error resetting password:', err);
     }
   };
 

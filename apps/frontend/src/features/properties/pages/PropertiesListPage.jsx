@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Footer } from "@shared/components/layout";
+import { Spinner, EmptyState, useToast } from "@shared/components/feedback";
 import { getProperties } from "@features/properties/services";
 import {
   SearchToolbar,
@@ -18,6 +19,7 @@ const PropertiesListPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
   const category = searchParams.get('propertyType');
+  const toast = useToast();
 
   const { data: results = [], isLoading: loading, isError } = useQuery({
     queryKey: ['properties', { query, category }],
@@ -141,7 +143,7 @@ const PropertiesListPage = () => {
         return prev.filter((p) => p.id !== property.id);
       }
       if (prev.length >= 3) {
-        alert('Máximo 3 propiedades para comparar');
+        toast.info('Máximo 3 propiedades para comparar');
         return prev;
       }
       return [...prev, property];
@@ -221,31 +223,28 @@ const PropertiesListPage = () => {
         {/* Vista condicional */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            <Spinner size="lg" />
           </div>
         ) : error ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">Error al cargar</h3>
-            <p className="text-red-500">{error}</p>
-          </div>
+          <EmptyState
+            icon="⚠️"
+            title="Error al cargar"
+            description={<span className="text-red-500">{error}</span>}
+          />
         ) : filteredResults.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">
-              No se encontraron propiedades
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Intenta ajustar los filtros o la búsqueda
-            </p>
-            <button
-              onClick={handleClearFilters}
-              className="px-6 py-3 bg-primary-600 text-white font-semibold
-                       rounded-xl hover:bg-primary-700 transition"
-            >
-              Limpiar filtros
-            </button>
-          </div>
+          <EmptyState
+            icon="🔍"
+            title="No se encontraron propiedades"
+            description="Intenta ajustar los filtros o la búsqueda"
+            action={
+              <button
+                onClick={handleClearFilters}
+                className="px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition"
+              >
+                Limpiar filtros
+              </button>
+            }
+          />
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredResults.map((property) => (
@@ -266,11 +265,11 @@ const PropertiesListPage = () => {
             onPropertyClick={(property) => setQuickViewProperty(property)}
           />
         ) : (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">📋</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">Vista Lista</h3>
-            <p className="text-gray-500">Vista de lista disponible próximamente</p>
-          </div>
+          <EmptyState
+            icon="📋"
+            title="Vista Lista"
+            description="Vista de lista disponible próximamente"
+          />
         )}
       </div>
 

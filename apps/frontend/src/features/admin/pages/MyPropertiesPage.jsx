@@ -7,28 +7,22 @@ import { getMyProperties, deleteProperty, togglePublish } from '../services';
 import { DashboardStats, ControlsBar, PropertiesGrid } from '../components';
 import { Footer } from '@shared/components/layout';
 import { BackButton } from '@shared/components';
+import { Spinner, EmptyState, useToast } from '@shared/components/feedback';
 
 const MyPropertiesPage = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const toast = useToast();
     const { isAuthenticated, loading } = useAuth();
     const [selectedCategoria, setSelectedCategoria] = useState('');
     const [sortBy, setSortBy] = useState('date-desc');
     const [confirmId, setConfirmId] = useState(null);
-    const [toastMsg, setToastMsg] = useState(null);
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
             navigate('/auth/acceder');
         }
     }, [isAuthenticated, loading, navigate]);
-
-    useEffect(() => {
-        if (toastMsg) {
-            const t = setTimeout(() => setToastMsg(null), 3000);
-            return () => clearTimeout(t);
-        }
-    }, [toastMsg]);
 
     const { data: propiedades = [] } = useQuery({
         queryKey: ['my-properties'],
@@ -43,10 +37,10 @@ const MyPropertiesPage = () => {
         mutationFn: deleteProperty,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['my-properties'] });
-            setToastMsg({ text: 'Propiedad eliminada con éxito', ok: true });
+            toast.success('Propiedad eliminada con éxito');
         },
         onError: () => {
-            setToastMsg({ text: 'No se pudo eliminar la propiedad. Intenta nuevamente.', ok: false });
+            toast.error('No se pudo eliminar la propiedad. Intenta nuevamente.');
         },
         onSettled: () => setConfirmId(null),
     });
@@ -55,13 +49,10 @@ const MyPropertiesPage = () => {
         mutationFn: ({ id, active }) => togglePublish(id, !active),
         onSuccess: (_data, { active }) => {
             queryClient.invalidateQueries({ queryKey: ['my-properties'] });
-            setToastMsg({
-                text: `La propiedad fue ${!active ? 'publicada' : 'despublicada'} con éxito.`,
-                ok: true,
-            });
+            toast.success(`La propiedad fue ${!active ? 'publicada' : 'despublicada'} con éxito.`);
         },
         onError: () => {
-            setToastMsg({ text: 'Hubo un error al actualizar la publicación. Intenta nuevamente.', ok: false });
+            toast.error('Hubo un error al actualizar la publicación. Intenta nuevamente.');
         },
     });
 
@@ -89,7 +80,7 @@ const MyPropertiesPage = () => {
 
     const sortedPropiedades = sortProperties(filteredPropiedades, sortBy);
 
-    if (loading) return <p className="text-center my-12 text-gray-500">Cargando...</p>;
+    if (loading) return <Spinner fullScreen label="Cargando..." />;
 
     if (!isAuthenticated) return null;
 
@@ -134,11 +125,11 @@ const MyPropertiesPage = () => {
                         />
                     </>
                 ) : (
-                    <div className="text-center py-20 bg-gray-50 rounded-xl">
-                        <div className="text-6xl mb-4">🏠</div>
-                        <h3 className="text-xl font-semibold text-gray-700 mb-2">No tienes propiedades todavía</h3>
-                        <p className="text-gray-500 mb-6">Comienza publicando tu primera propiedad</p>
-                    </div>
+                    <EmptyState
+                        icon="🏠"
+                        title="No tienes propiedades todavía"
+                        description="Comienza publicando tu primera propiedad"
+                    />
                 )}
             </div>
 
@@ -151,12 +142,6 @@ const MyPropertiesPage = () => {
                             <button onClick={() => deleteMutation.mutate(confirmId)} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</button>
                         </div>
                     </div>
-                </div>
-            )}
-
-            {toastMsg && (
-                <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white text-sm max-w-xs ${toastMsg.ok ? 'bg-green-600' : 'bg-red-600'}`}>
-                    {toastMsg.text}
                 </div>
             )}
 

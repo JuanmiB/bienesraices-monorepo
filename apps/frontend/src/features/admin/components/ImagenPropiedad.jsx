@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDropzone } from 'react-dropzone';
+import { useToast } from '@shared/components/feedback';
 
 /**
  * Componente para mostrar y reemplazar la imagen de una propiedad
@@ -13,6 +14,7 @@ import { useDropzone } from 'react-dropzone';
 const ImagenPropiedad = ({ imagenActual, onImagenChange, permitirCambio = true }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const toast = useToast();
 
   // Actualizar preview cuando cambia la imagen actual
   useEffect(() => {
@@ -48,9 +50,9 @@ const ImagenPropiedad = ({ imagenActual, onImagenChange, permitirCambio = true }
     onDropRejected: (rejectedFiles) => {
       const error = rejectedFiles[0]?.errors[0];
       if (error?.code === 'file-too-large') {
-        alert('La imagen es muy grande. Máximo 5MB.');
+        toast.error('La imagen es muy grande. Máximo 5MB.');
       } else if (error?.code === 'file-invalid-type') {
-        alert('Formato no permitido. Usa PNG, JPG, GIF o WebP.');
+        toast.error('Formato no permitido. Usa PNG, JPG, GIF o WebP.');
       }
     },
   });

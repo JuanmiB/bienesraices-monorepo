@@ -5,6 +5,7 @@ import { getMe, updateProfile, uploadAvatar } from "@features/user/services";
 import { useAuth } from "@features/auth/context";
 import { Footer } from "@shared/components/layout";
 import { BackButton } from "@shared/components";
+import { Spinner } from "@shared/components/feedback";
 import { AvatarUpload } from "../components";
 
 const ProfilePage = () => {
@@ -78,7 +79,7 @@ const ProfilePage = () => {
   const uploadingAvatar = avatarMutation.isPending;
   const submitting = updateMutation.isPending || uploadingAvatar;
 
-  if (authLoading || loading) return <p className="text-center my-12 text-gray-500">Cargando...</p>;
+  if (authLoading || loading) return <Spinner fullScreen label="Cargando..." />;
 
   if (!isAuthenticated) return null;
 
