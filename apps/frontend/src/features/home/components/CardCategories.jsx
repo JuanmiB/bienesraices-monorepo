@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 import { House, Terrain, Market, Garage, Offices, Department } from '@shared/assets/icons/icon';
-import { api } from '@shared/services/api';
+import { usePropertyTypes } from '@features/properties/hooks';
 
 const iconMapping = {
     Casa: <House />,
@@ -14,34 +13,15 @@ const iconMapping = {
 
 const CardCategories = () => {
     const navigate = useNavigate();
-    const [categorias, setCategorias] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data, isLoading: loading } = usePropertyTypes();
+    const categorias = (data?.propertyTypes ?? []).map(type => ({
+        id: type.value,
+        name: type.label,
+    }));
 
     const handleSearch = (category) => {
         navigate(`/buscar?propertyType=${category}`);
     };
-
-
-    // Obtener categorías desde la API
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const { data } = await api.get('/api/v1/properties/types');
-                const categoriasFormateadas = data.propertyTypes.map(type => ({
-                    id: type.value,
-                    name: type.label
-                }));
-                setCategorias(categoriasFormateadas); // Actualizar el estado con el array de objetos
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-            }
-            finally {
-                setLoading(false); // Cambiar el estado de `loading` a `false`
-            }
-        };
-
-        fetchCategories();
-    }, []);
 
     // Renderizar las categorías
     return (

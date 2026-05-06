@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { api } from "@shared/services/api";
+import { verifyEmail } from "@features/auth/services";
 
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
@@ -9,19 +9,19 @@ const VerifyEmailPage = () => {
   const token = searchParams.get("token");
 
   useEffect(() => {
-    const verify = async () => {
+    const run = async () => {
       if (!token) {
         setStatus("error");
         return;
       }
       try {
-        await api.post("/api/v1/auth/email/verify", { token });
+        await verifyEmail(token);
         setStatus("success");
       } catch {
         setStatus("error");
       }
     };
-    verify();
+    run();
   }, [token]);
 
   if (status === "loading") {

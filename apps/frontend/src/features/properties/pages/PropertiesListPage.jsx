@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Footer } from "@shared/components/layout";
-import { api } from "@shared/services/api";
+import { getProperties } from "@features/properties/services";
 import {
   SearchToolbar,
   SearchStats,
@@ -14,13 +15,15 @@ import {
 } from "../components/search";
 
 const PropertiesListPage = () => {
-  const [results, setResults] = useState([]);
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
   const category = searchParams.get('propertyType');
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: results = [], isLoading: loading, isError } = useQuery({
+    queryKey: ['properties', { query, category }],
+    queryFn: () => getProperties({ q: query, propertyType: category }),
+  });
+  const error = isError ? "Hubo un problema al obtener los resultados." : null;
 
   // Estado de UI
   const [viewMode, setViewMode] = useState('grid');
@@ -49,35 +52,6 @@ const PropertiesListPage = () => {
       propertyType: category || null
     }));
   }, [category]);
-
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const params = new URLSearchParams();
-        if (query) params.append('q', query);
-        if (category) params.append('propertyType', category);
-
-        const queryString = params.toString();
-        const url = queryString
-          ? `/api/v1/properties?${queryString}`
-          : '/api/v1/properties';
-
-        const response = await api.get(url);
-        setResults(response.data.data || response.data || []);
-      } catch (err) {
-        console.error('Error fetching properties:', err);
-        setError("Hubo un problema al obtener los resultados.");
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchResults();
-  }, [query, category]);
 
   // Aplicar filtros y ordenamiento
   const applyFiltersAndSort = (properties) => {

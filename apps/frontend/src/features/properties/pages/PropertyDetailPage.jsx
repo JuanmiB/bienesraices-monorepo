@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Footer } from "@shared/components/layout";
 import { BackButton } from "@shared/components";
 import {
@@ -10,31 +10,17 @@ import {
   PropiedadMapa,
   PropertyContactForm
 } from "../components/detail";
-import { api } from "@shared/services/api";
+import { getPropertyById } from "@features/properties/services";
 import { useAuth } from "@features/auth/context";
 
 const PropertyDetailPage = () => {
-  const [result, setResults] = useState(null);
-  const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const { user } = useAuth()
-
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        const response = await api.get(`/api/v1/properties/${id}`);
-        setResults(response.data.data);
-      } catch (error) {
-        console.error('Error fetching property details:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchResults();
-    }
-  }, [id]);
+  const { user } = useAuth();
+  const { data: result, isLoading: loading } = useQuery({
+    queryKey: ['property', id],
+    queryFn: () => getPropertyById(id),
+    enabled: Boolean(id),
+  });
 
   if (loading) return <p className="text-center my-12 text-gray-500">Cargando...</p>;
 
