@@ -21,11 +21,11 @@ createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <AuthProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
             <App />
-          </BrowserRouter>
-        </AuthProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </ToastProvider>
     </QueryClientProvider>
   </ErrorBoundary>

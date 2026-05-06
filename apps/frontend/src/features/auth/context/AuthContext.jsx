@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext, useContext } from "react";
+import { useEffect, useState, useCallback, useMemo, createContext, useContext } from "react";
 import PropTypes from "prop-types";
 import * as authService from "@features/auth/services";
 import { ERROR_MESSAGES } from "@bienesraices/shared-utils/constants";
@@ -16,7 +16,19 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const login = async (email, password) => {
+    const refreshUser = useCallback(async () => {
+        try {
+            const verifiedUser = await authService.verify();
+            setIsAuthenticated(true);
+            setUser(mapUser(verifiedUser));
+            return true;
+        } catch {
+            setIsAuthenticated(false);
+            return false;
+        }
+    }, []);
+
+    const login = useCallback(async (email, password) => {
         setLoading(true);
         try {
             const userData = await authService.login(email, password);
@@ -28,9 +40,9 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         setLoading(true);
         try {
             await authService.logout();
@@ -41,9 +53,9 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const register = async (payload) => {
+    const register = useCallback(async (payload) => {
         setLoading(true);
         setError(null);
         try {
@@ -55,9 +67,9 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const recoverPassword = async (email) => {
+    const recoverPassword = useCallback(async (email) => {
         try {
             await authService.recoverPassword(email);
         } catch (err) {
@@ -66,9 +78,9 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const resetPassword = async (newPassword, token) => {
+    const resetPassword = useCallback(async (newPassword, token) => {
         setLoading(true);
         try {
             await authService.resetPassword(token, newPassword);
@@ -78,39 +90,28 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const refreshUser = async () => {
-        try {
-            const verifiedUser = await authService.verify();
-            setIsAuthenticated(true);
-            setUser(mapUser(verifiedUser));
-        } catch {
-            setIsAuthenticated(false);
-        }
-    };
-
-    useEffect(() => {
-        const verifyAuth = async () => {
-            setLoading(true);
-            try {
-                const verifiedUser = await authService.verify();
-                setIsAuthenticated(true);
-                setUser(mapUser(verifiedUser));
-            } catch {
-                setIsAuthenticated(false);
-            } finally {
-                setLoading(false);
-            }
-        };
-        verifyAuth();
     }, []);
 
-    return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout, loading, error, setError, recoverPassword, resetPassword, register, refreshUser }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    useEffect(() => {
+        setLoading(true);
+        refreshUser().finally(() => setLoading(false));
+    }, [refreshUser]);
+
+    const value = useMemo(() => ({
+        isAuthenticated,
+        user,
+        loading,
+        error,
+        setError,
+        login,
+        logout,
+        register,
+        recoverPassword,
+        resetPassword,
+        refreshUser,
+    }), [isAuthenticated, user, loading, error, login, logout, register, recoverPassword, resetPassword, refreshUser]);
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 AuthProvider.propTypes = {

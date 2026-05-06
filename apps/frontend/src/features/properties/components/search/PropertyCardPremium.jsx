@@ -1,7 +1,16 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ImageGalleryHover from './ImageGalleryHover';
 import { Avatar } from '@shared/components';
+
+const TYPE_LABELS = {
+  house: 'Casa',
+  apartment: 'Apartamento',
+  office: 'Oficina',
+  land: 'Terreno',
+  warehouse: 'Bodega'
+};
 
 const PropertyCardPremium = ({
   property,
@@ -12,14 +21,6 @@ const PropertyCardPremium = ({
   isComparing
 }) => {
   const navigate = useNavigate();
-
-  const typeLabels = {
-    house: 'Casa',
-    apartment: 'Apartamento',
-    office: 'Oficina',
-    land: 'Terreno',
-    warehouse: 'Bodega'
-  };
 
   const images = property.images?.length > 0
     ? property.images.map(img => img.url || img)
@@ -57,7 +58,7 @@ const PropertyCardPremium = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onToggleFavorite();
+              onToggleFavorite(property.id);
             }}
             className={`w-10 h-10 backdrop-blur-sm rounded-full
                        flex items-center justify-center hover:bg-white
@@ -71,7 +72,7 @@ const PropertyCardPremium = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onToggleCompare();
+              onToggleCompare(property);
             }}
             className={`w-10 h-10 backdrop-blur-sm rounded-full
                        flex items-center justify-center hover:bg-white
@@ -92,7 +93,7 @@ const PropertyCardPremium = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onQuickView();
+              onQuickView(property);
             }}
             className="px-4 py-2 bg-white text-primary-600 font-semibold
                        rounded-lg shadow-lg hover:bg-gray-50 transition"
@@ -110,7 +111,7 @@ const PropertyCardPremium = ({
             className="px-2 py-1 bg-primary-50 text-primary-700 text-xs
                        font-semibold rounded"
           >
-            {typeLabels[property.propertyType] || property.propertyType}
+            {TYPE_LABELS[property.propertyType] || property.propertyType}
           </span>
           <span
             className="px-2 py-1 bg-green-50 text-green-700 text-xs
@@ -267,4 +268,4 @@ PropertyCardPremium.propTypes = {
   isComparing: PropTypes.bool.isRequired,
 };
 
-export default PropertyCardPremium;
+export default memo(PropertyCardPremium);
