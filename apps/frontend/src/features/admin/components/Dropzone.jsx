@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDropzone } from 'react-dropzone';
+import { useToast } from '@shared/components/feedback';
 
 const Dropzone = ({ setImagenes }) => {
   const [files, setFiles] = useState([]);
+  const toast = useToast();
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length === 0) return;
@@ -23,7 +25,7 @@ const Dropzone = ({ setImagenes }) => {
     disabled: files.length >= 8,
     onDrop,
     onDropRejected: () => {
-      alert('Archivo no válido. Asegúrate de subir imágenes de hasta 5MB.');
+      toast.error('Archivo no válido. Asegúrate de subir imágenes de hasta 5MB.');
     },
   });
 

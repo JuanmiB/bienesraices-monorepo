@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from '@shared/services/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createProperty } from '../services';
 import { useForm } from '@shared/hooks';
 import { BackButton } from '@shared/components';
 import { FormularioPropiedad, Dropzone } from '../components';
@@ -29,30 +30,27 @@ const CreatePropertyPage = () => {
     longitude: 0
   };
 
-  const { values, handleChange, handleSubmit, resetForm, handleLatLng, handleGeoData } = useForm(initialValues)
+  const queryClient = useQueryClient();
+  const { values, handleChange, handleSubmit, resetForm, handleLatLng, handleGeoData } = useForm(initialValues);
 
-  const onSubmit = async (data) => {
-    try {
-      const formData = new FormData();
-      Object.keys(data).forEach(key => {
-        formData.append(key, data[key]);
-      })
+  const createMutation = useMutation({
+    mutationFn: ({ data, images }) => createProperty(data, images),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-properties'] });
+      resetForm();
+      setImagenes([]);
+      setStatus("success");
+    },
+    onError: () => setStatus("error"),
+  });
 
-      if (imagenes.length === 0) {
-        setStatus("error");
-        return;
-      }
-      imagenes.forEach(file => formData.append("imagenes", file));
-      await api.post('/api/v1/users/me/properties', formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      resetForm()
-      setImagenes([])
-      setStatus("success")
-    } catch {
-      setStatus("error")
+  const onSubmit = (data) => {
+    if (imagenes.length === 0) {
+      setStatus("error");
+      return;
     }
-  }
+    createMutation.mutate({ data, images: imagenes });
+  };
 
   if (status === "success") {
     return (

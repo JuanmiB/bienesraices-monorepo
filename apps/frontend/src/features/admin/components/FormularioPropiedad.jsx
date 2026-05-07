@@ -1,50 +1,30 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
-import MapComponent from "../../../components/Mapa/Mapa";
-import { api } from "@shared/services/api";
+import { Map as MapComponent } from "@shared/components/Map";
+import { usePropertyTypes } from "@features/properties/hooks";
 import { getAddress } from "@shared/utils";
+import * as logger from "@shared/utils/logger";
 
 export const FormularioPropiedad = ({ values, handleChange, handleSubmit, handleLatLng, handleGeoData, onSubmit, isEditable, submitLabel = 'Publicar' }) => {
-    const [loading, setLoading] = useState(true);
-    const [propertyTypes, setPropertyTypes] = useState([]);
-    const [operationTypes, setOperationTypes] = useState([]);
+    const { data, isLoading: loading } = usePropertyTypes();
+    const propertyTypes = data?.propertyTypes ?? [];
+    const operationTypes = data?.operationTypes ?? [];
 
     useEffect(() => {
-        const fetchInitialData = async () => {
-            try {
-                const response = await api.get('/api/v1/properties/types');
-                setPropertyTypes(response.data.propertyTypes);
-                setOperationTypes(response.data.operationTypes);
-
-                // Solo solicitar geolocation si es nuevo (latitude y longitude son 0)
-                // y si isEditable es true (creación de nueva propiedad)
-                if (isEditable && values.latitude === 0 && values.longitude === 0) {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (pos) => {
-                                const userLat = pos.coords.latitude;
-                                const userLng = pos.coords.longitude;
-                                handleLatLng(userLat, userLng);
-                            },
-                            () => {
-                                // Si falla, usar coordenadas por defecto (Buenos Aires)
-                                handleLatLng(-34.6037, -58.3816);
-                            }
-                        );
-                    } else {
-                        // Si no hay geolocation, usar coordenadas por defecto (Buenos Aires)
+        if (isEditable && values.latitude === 0 && values.longitude === 0) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        handleLatLng(pos.coords.latitude, pos.coords.longitude);
+                    },
+                    () => {
                         handleLatLng(-34.6037, -58.3816);
                     }
-                }
-            } catch (error) {
-                // Error al cargar tipos de propiedades o geolocalización
-                console.error('Error loading initial data:', error);
-            } finally {
-                setLoading(false);
+                );
+            } else {
+                handleLatLng(-34.6037, -58.3816);
             }
-        };
-
-        fetchInitialData()
+        }
     }, [handleLatLng, isEditable, values.latitude, values.longitude]);
 
     useEffect(() => {
@@ -52,9 +32,8 @@ export const FormularioPropiedad = ({ values, handleChange, handleSubmit, handle
             try {
                 const data = await getAddress(values.latitude, values.longitude)
                 handleGeoData(data.address.road, data.address.city, data.address.state)
-            } catch (error) {
-                // Error al obtener dirección desde coordenadas (servicio de geocoding no disponible)
-                console.error('Error fetching address:', error);
+            } catch (err) {
+                logger.error('Error fetching address:', err);
             }
         }
         if (values.latitude && values.longitude) {

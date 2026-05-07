@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Footer } from "@shared/components/layout";
-import { api } from "@shared/services/api";
+import { Spinner, EmptyState, useToast } from "@shared/components/feedback";
+import { getProperties } from "@features/properties/services";
 import {
   SearchToolbar,
   SearchStats,
@@ -13,89 +15,73 @@ import {
   MapView
 } from "../components/search";
 
+const DEFAULT_PRICE_RANGE = { min: 0, max: 10_000_000 };
+
+const DEFAULT_FILTERS = {
+  priceMin: DEFAULT_PRICE_RANGE.min,
+  priceMax: DEFAULT_PRICE_RANGE.max,
+  areaMin: null,
+  areaMax: null,
+  bedrooms: null,
+  bathrooms: null,
+  propertyType: null,
+};
+
+const sortProperties = (list, sortBy) => {
+  switch (sortBy) {
+    case 'price-asc':
+      return [...list].sort((a, b) => a.price - b.price);
+    case 'price-desc':
+      return [...list].sort((a, b) => b.price - a.price);
+    case 'date-desc':
+      return [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    case 'area-desc':
+      return [...list].sort((a, b) => (b.totalArea || 0) - (a.totalArea || 0));
+    default:
+      return list;
+  }
+};
+
 const PropertiesListPage = () => {
-  const [results, setResults] = useState([]);
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
   const category = searchParams.get('propertyType');
+  const toast = useToast();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: results = [], isLoading: loading, isError } = useQuery({
+    queryKey: ['properties', { query, category }],
+    queryFn: () => getProperties({ q: query, propertyType: category }),
+  });
+  const error = isError ? "Hubo un problema al obtener los resultados." : null;
 
-  // Estado de UI
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('relevance');
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    priceMin: 0,
-    priceMax: 10000000,
-    areaMin: null,
-    areaMax: null,
-    bedrooms: null,
-    bathrooms: null,
-    propertyType: category || null
-  });
+  const [filters, setFilters] = useState({ ...DEFAULT_FILTERS, propertyType: category || null });
 
-  // Estados para modales e interacciones
   const [quickViewProperty, setQuickViewProperty] = useState(null);
   const [compareProperties, setCompareProperties] = useState([]);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [favorites, setFavorites] = useState([]);
 
-  // Sincronizar filters con parámetros URL
   useEffect(() => {
-    setFilters(prev => ({
-      ...prev,
-      propertyType: category || null
-    }));
+    setFilters((prev) => ({ ...prev, propertyType: category || null }));
   }, [category]);
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const filteredResults = useMemo(() => {
+    let filtered = results;
 
-        const params = new URLSearchParams();
-        if (query) params.append('q', query);
-        if (category) params.append('propertyType', category);
-
-        const queryString = params.toString();
-        const url = queryString
-          ? `/api/v1/properties?${queryString}`
-          : '/api/v1/properties';
-
-        const response = await api.get(url);
-        setResults(response.data.data || response.data || []);
-      } catch (err) {
-        console.error('Error fetching properties:', err);
-        setError("Hubo un problema al obtener los resultados.");
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchResults();
-  }, [query, category]);
-
-  // Aplicar filtros y ordenamiento
-  const applyFiltersAndSort = (properties) => {
-    let filtered = [...properties];
-
-    // Filtro de búsqueda textual
     if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
+      const lower = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (p) =>
-          p.title?.toLowerCase().includes(lowerSearch) ||
-          p.address?.toLowerCase().includes(lowerSearch) ||
-          p.description?.toLowerCase().includes(lowerSearch)
+          p.title?.toLowerCase().includes(lower) ||
+          p.address?.toLowerCase().includes(lower) ||
+          p.description?.toLowerCase().includes(lower)
       );
     }
 
-    // Filtro de precio
-    if (filters.priceMin !== 0 || filters.priceMax !== 10000000) {
+    if (filters.priceMin !== DEFAULT_PRICE_RANGE.min || filters.priceMax !== DEFAULT_PRICE_RANGE.max) {
       filtered = filtered.filter(
         (p) =>
           p.price >= (filters.priceMin || 0) &&
@@ -103,7 +89,6 @@ const PropertiesListPage = () => {
       );
     }
 
-    // Filtro de área
     if (filters.areaMin || filters.areaMax) {
       filtered = filtered.filter(
         (p) =>
@@ -112,93 +97,74 @@ const PropertiesListPage = () => {
       );
     }
 
-    // Filtro de habitaciones
     if (filters.bedrooms) {
       filtered = filtered.filter((p) => (p.bedrooms || 0) >= filters.bedrooms);
     }
 
-    // Filtro de baños
     if (filters.bathrooms) {
       filtered = filtered.filter((p) => (p.bathrooms || 0) >= filters.bathrooms);
     }
 
-    // Filtro de tipo
     if (filters.propertyType) {
       filtered = filtered.filter((p) => p.propertyType === filters.propertyType);
     }
 
-    // Ordenamiento
-    switch (sortBy) {
-      case 'price-asc':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'date-desc':
-        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        break;
-      case 'area-desc':
-        filtered.sort((a, b) => (b.totalArea || 0) - (a.totalArea || 0));
-        break;
-      default:
-        // relevance - mantener orden original
-        break;
+    return sortProperties(filtered, sortBy);
+  }, [results, searchTerm, filters, sortBy]);
+
+  const priceRange = useMemo(() => {
+    if (filteredResults.length === 0) return null;
+    let min = Infinity;
+    let max = -Infinity;
+    for (const p of filteredResults) {
+      if (p.price < min) min = p.price;
+      if (p.price > max) max = p.price;
     }
+    return { min, max };
+  }, [filteredResults]);
 
-    return filtered;
-  };
-
-  const filteredResults = applyFiltersAndSort(results);
-
-  // Handlers
-  const handleToggleFavorite = (propertyId) => {
+  const handleToggleFavorite = useCallback((propertyId) => {
     setFavorites((prev) =>
       prev.includes(propertyId)
         ? prev.filter((id) => id !== propertyId)
         : [...prev, propertyId]
     );
-  };
+  }, []);
 
-  const handleToggleCompare = (property) => {
+  const handleToggleCompare = useCallback((property) => {
     setCompareProperties((prev) => {
-      const exists = prev.find((p) => p.id === property.id);
-      if (exists) {
+      if (prev.find((p) => p.id === property.id)) {
         return prev.filter((p) => p.id !== property.id);
       }
       if (prev.length >= 3) {
-        alert('Máximo 3 propiedades para comparar');
+        toast.info('Máximo 3 propiedades para comparar');
         return prev;
       }
       return [...prev, property];
     });
-  };
+  }, [toast]);
 
-  const handleClearFilters = () => {
-    setFilters({
-      priceMin: 0,
-      priceMax: 10000000,
-      areaMin: null,
-      areaMax: null,
-      bedrooms: null,
-      bathrooms: null,
-      propertyType: null
-    });
+  const handleClearFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
     setSearchTerm('');
-  };
+  }, []);
 
-  const handleRemoveFilter = (key) => {
-    if (key === 'price') {
-      setFilters({ ...filters, priceMin: 0, priceMax: 10000000 });
-    } else if (key === 'area') {
-      setFilters({ ...filters, areaMin: null, areaMax: null });
-    } else {
-      setFilters({ ...filters, [key]: null });
-    }
-  };
+  const handleRemoveFilter = useCallback((key) => {
+    setFilters((prev) => {
+      if (key === 'price') return { ...prev, priceMin: DEFAULT_PRICE_RANGE.min, priceMax: DEFAULT_PRICE_RANGE.max };
+      if (key === 'area') return { ...prev, areaMin: null, areaMax: null };
+      return { ...prev, [key]: null };
+    });
+  }, []);
+
+  const handleFiltersChange = useCallback((newFilters) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  }, []);
+
+  const handleQuickView = useCallback((property) => setQuickViewProperty(property), []);
 
   const activeFiltersCount =
-    (filters.priceMin !== 0 || filters.priceMax !== 10000000 ? 1 : 0) +
+    (filters.priceMin !== DEFAULT_PRICE_RANGE.min || filters.priceMax !== DEFAULT_PRICE_RANGE.max ? 1 : 0) +
     (filters.areaMin || filters.areaMax ? 1 : 0) +
     (filters.bedrooms ? 1 : 0) +
     (filters.bathrooms ? 1 : 0) +
@@ -206,12 +172,11 @@ const PropertiesListPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Toolbar sticky */}
       <SearchToolbar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         filters={filters}
-        onFiltersChange={(newFilters) => setFilters({ ...filters, ...newFilters })}
+        onFiltersChange={handleFiltersChange}
         onClearFilters={handleClearFilters}
         sortBy={sortBy}
         onSortChange={setSortBy}
@@ -221,66 +186,53 @@ const PropertiesListPage = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Stats */}
         {!loading && !error && filteredResults.length > 0 && (
           <SearchStats
             totalResults={results.length}
             filteredResults={filteredResults.length}
-            priceRange={
-              filteredResults.length > 0
-                ? {
-                    min: Math.min(...filteredResults.map((p) => p.price)),
-                    max: Math.max(...filteredResults.map((p) => p.price))
-                  }
-                : null
-            }
+            priceRange={priceRange}
           />
         )}
 
-        {/* Active filters pills */}
         <ActiveFiltersBar
           filters={filters}
           onRemoveFilter={handleRemoveFilter}
           onClearAll={handleClearFilters}
         />
 
-        {/* Vista condicional */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            <Spinner size="lg" />
           </div>
         ) : error ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">Error al cargar</h3>
-            <p className="text-red-500">{error}</p>
-          </div>
+          <EmptyState
+            icon="⚠️"
+            title="Error al cargar"
+            description={<span className="text-red-500">{error}</span>}
+          />
         ) : filteredResults.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">
-              No se encontraron propiedades
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Intenta ajustar los filtros o la búsqueda
-            </p>
-            <button
-              onClick={handleClearFilters}
-              className="px-6 py-3 bg-primary-600 text-white font-semibold
-                       rounded-xl hover:bg-primary-700 transition"
-            >
-              Limpiar filtros
-            </button>
-          </div>
+          <EmptyState
+            icon="🔍"
+            title="No se encontraron propiedades"
+            description="Intenta ajustar los filtros o la búsqueda"
+            action={
+              <button
+                onClick={handleClearFilters}
+                className="px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition"
+              >
+                Limpiar filtros
+              </button>
+            }
+          />
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredResults.map((property) => (
               <PropertyCardPremium
                 key={property.id}
                 property={property}
-                onQuickView={() => setQuickViewProperty(property)}
-                onToggleFavorite={() => handleToggleFavorite(property.id)}
-                onToggleCompare={() => handleToggleCompare(property)}
+                onQuickView={handleQuickView}
+                onToggleFavorite={handleToggleFavorite}
+                onToggleCompare={handleToggleCompare}
                 isFavorite={favorites.includes(property.id)}
                 isComparing={compareProperties.some((p) => p.id === property.id)}
               />
@@ -289,18 +241,17 @@ const PropertiesListPage = () => {
         ) : viewMode === 'map' ? (
           <MapView
             properties={filteredResults}
-            onPropertyClick={(property) => setQuickViewProperty(property)}
+            onPropertyClick={handleQuickView}
           />
         ) : (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">📋</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">Vista Lista</h3>
-            <p className="text-gray-500">Vista de lista disponible próximamente</p>
-          </div>
+          <EmptyState
+            icon="📋"
+            title="Vista Lista"
+            description="Vista de lista disponible próximamente"
+          />
         )}
       </div>
 
-      {/* Modals y overlays */}
       {quickViewProperty && (
         <QuickViewModal
           property={quickViewProperty}

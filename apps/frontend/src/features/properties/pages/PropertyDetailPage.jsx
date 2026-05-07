@@ -1,42 +1,29 @@
-import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Footer } from "@shared/components/layout";
 import { BackButton } from "@shared/components";
-import FormularioContacto from "../../../components/FormularioContacto/FormularioContacto";
+import { Spinner } from "@shared/components/feedback";
 import {
   GaleriaPropiedad,
   TarjetaVendedor,
   PropiedadInfo,
   PropiedadDescripcion,
-  PropiedadMapa
+  PropiedadMapa,
+  PropertyContactForm
 } from "../components/detail";
-import { api } from "@shared/services/api";
+import { getPropertyById } from "@features/properties/services";
 import { useAuth } from "@features/auth/context";
 
 const PropertyDetailPage = () => {
-  const [result, setResults] = useState(null);
-  const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const { user } = useAuth()
+  const { user } = useAuth();
+  const { data: result, isLoading: loading } = useQuery({
+    queryKey: ['property', id],
+    queryFn: () => getPropertyById(id),
+    enabled: Boolean(id),
+  });
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        const response = await api.get(`/api/v1/properties/${id}`);
-        setResults(response.data.data);
-      } catch (error) {
-        console.error('Error fetching property details:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchResults();
-    }
-  }, [id]);
-
-  if (loading) return <p className="text-center my-12 text-gray-500">Cargando...</p>;
+  if (loading) return <Spinner fullScreen label="Cargando..." />;
 
   return (
     <>
@@ -74,7 +61,7 @@ const PropertyDetailPage = () => {
             {user?.id !== result.owner?.id && (
               <div className="flex flex-col gap-4 mt-4 customlg:mt-0">
                 <TarjetaVendedor owner={result.owner} />
-                <FormularioContacto propertyId={id} />
+                <PropertyContactForm propertyId={id} />
               </div>
             )}
           </div>

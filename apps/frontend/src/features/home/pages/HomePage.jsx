@@ -1,26 +1,10 @@
-import { useEffect, useState } from 'react';
 import { Footer } from "@shared/components/layout";
 import { Search, PropiedadesDestacadas } from '../components';
-import { api } from '@shared/services/api';
+import { usePropertyTypes } from '@features/properties/hooks';
 
 const HomePage = () => {
-  const [categories, setCategories] = useState([]);
-  const [, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await api.get('/api/v1/properties/types');
-        setCategories(data.propertyTypes);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  const { data } = usePropertyTypes();
+  const categories = data?.propertyTypes ?? [];
 
   return (
     <>

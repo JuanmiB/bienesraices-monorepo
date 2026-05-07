@@ -1,53 +1,48 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "@shared/services/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getMe, updateProfile, uploadAvatar } from "@features/user/services";
 import { useAuth } from "@features/auth/context";
 import { Footer } from "@shared/components/layout";
 import { BackButton } from "@shared/components";
+import { Spinner } from "@shared/components/feedback";
 import { AvatarUpload } from "../components";
 
 const ProfilePage = () => {
   const { isAuthenticated, loading: authLoading, refreshUser } = useAuth();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
   const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
-  const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(null); // null | "success" | "error"
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
-  // Redirigir si no está autenticado
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       navigate('/auth/acceder');
     }
   }, [isAuthenticated, authLoading, navigate]);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await api.get("/api/v1/users/me");
-        const data = response.data.data;
-        setUser(data);
-        setForm({
-          firstName: data.firstName || "",
-          lastName: data.lastName || "",
-          phone: data.phone || "",
-        });
-        // Establecer avatar actual si existe
-        if (data.avatarUrl || data.foto) {
-          setAvatarPreview(data.avatarUrl || data.foto);
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: user, isLoading: loading } = useQuery({
+    queryKey: ['me'],
+    queryFn: getMe,
+    enabled: isAuthenticated && !authLoading,
+  });
 
-    fetchProfile();
-  }, []);
+  useEffect(() => {
+    if (!user) return;
+    setForm({
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      phone: user.phone || "",
+    });
+    if (user.avatarUrl || user.foto) {
+      setAvatarPreview(user.avatarUrl || user.foto);
+    }
+  }, [user]);
+
+  const updateMutation = useMutation({ mutationFn: updateProfile });
+  const avatarMutation = useMutation({ mutationFn: uploadAvatar });
 
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -67,59 +62,24 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
-      // Primero actualizar datos de perfil
-      const response = await api.put("/api/v1/users/me", form);
-      setUser(response.data.data);
-
-      // Si hay nueva foto, subirla
+      await updateMutation.mutateAsync(form);
       if (avatarFile) {
-        await handleAvatarUpload();
-        // Refrescar el usuario en el contexto para actualizar el header
+        await avatarMutation.mutateAsync(avatarFile);
         await refreshUser();
+        setAvatarFile(null);
       }
-
+      queryClient.invalidateQueries({ queryKey: ['me'] });
       setStatus("success");
     } catch {
       setStatus("error");
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleAvatarUpload = async () => {
-    if (!avatarFile) return;
+  const uploadingAvatar = avatarMutation.isPending;
+  const submitting = updateMutation.isPending || uploadingAvatar;
 
-    setUploadingAvatar(true);
-    try {
-      const formData = new FormData();
-      formData.append('avatar', avatarFile);
-
-      const response = await api.post('/api/v1/users/me/avatar', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      // Actualizar el usuario con la nueva foto
-      setUser(prev => ({
-        ...prev,
-        avatarUrl: response.data.data.avatarUrl,
-        foto: response.data.data.avatarUrl,
-      }));
-
-      setAvatarFile(null);
-    } catch (error) {
-      console.error('Error subiendo avatar:', error);
-      throw error;
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
-
-  if (authLoading || loading) return <p className="text-center my-12 text-gray-500">Cargando...</p>;
+  if (authLoading || loading) return <Spinner fullScreen label="Cargando..." />;
 
   if (!isAuthenticated) return null;
 
@@ -223,10 +183,10 @@ const ProfilePage = () => {
 
           <button
             type="submit"
-            disabled={loading || uploadingAvatar}
+            disabled={submitting}
             className="w-full bg-[var(--color-primary)] text-white font-semibold py-2 rounded-md hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading || uploadingAvatar ? 'Guardando...' : 'Guardar cambios'}
+            {submitting ? 'Guardando...' : 'Guardar cambios'}
           </button>
         </form>
       </div>

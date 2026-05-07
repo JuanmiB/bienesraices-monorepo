@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { api } from '@shared/services/api';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getMyPropertyById, updateProperty } from '../services';
 import { useForm } from '@shared/hooks';
 import { BackButton } from '@shared/components';
+import { Spinner } from '@shared/components/feedback';
 import { FormularioPropiedad, GaleriaAdmin } from '../components';
 import { useParams, useNavigate } from "react-router-dom";
 
 const EditPropertyPage = () => {
   const [imagenes, setImagenes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(null);
-  const {id} = useParams()
+  const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const initialValues = {
     title: "",
@@ -33,61 +35,48 @@ const EditPropertyPage = () => {
 
   const { values, setValues, handleChange, handleSubmit, handleLatLng, handleGeoData } = useForm(initialValues);
 
-  // Cargar los datos de la propiedad al montar
+  const { data: property, isLoading: loading } = useQuery({
+    queryKey: ['my-property', id],
+    queryFn: () => getMyPropertyById(id),
+    enabled: Boolean(id),
+  });
+
   useEffect(() => {
-    const fetchPropiedad = async () => {
-      try {
-        const response = await api.get(`/api/v1/users/me/properties/${id}`);
-        const data = response.data.data;
+    if (!property) return;
+    setValues({
+      title: property.title,
+      description: property.description,
+      propertyType: property.propertyType,
+      operationType: property.operationType,
+      price: property.price,
+      currency: property.currency,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      garages: property.garages,
+      totalArea: property.totalArea,
+      coveredArea: property.coveredArea,
+      address: property.address,
+      city: property.city,
+      state: property.state,
+      latitude: Number(property.latitude) || 0,
+      longitude: Number(property.longitude) || 0,
+    });
+    setImagenes(property.images || []);
+  }, [property, setValues]);
 
-        setValues({
-          title: data.title,
-          description: data.description,
-          propertyType: data.propertyType,
-          operationType: data.operationType,
-          price: data.price,
-          currency: data.currency,
-          bedrooms: data.bedrooms,
-          bathrooms: data.bathrooms,
-          garages: data.garages,
-          totalArea: data.totalArea,
-          coveredArea: data.coveredArea,
-          address: data.address,
-          city: data.city,
-          state: data.state,
-          latitude: Number(data.latitude) || 0,
-          longitude: Number(data.longitude) || 0,
-        });
-        setImagenes(data.images || []);
-      } catch (error) {
-        // Error loading property
-        console.error('Error loading property:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const updateMutation = useMutation({
+    mutationFn: (data) => updateProperty(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-properties'] });
+      queryClient.invalidateQueries({ queryKey: ['my-property', id] });
+      setStatus("success");
+    },
+    onError: () => setStatus("error"),
+  });
 
-    fetchPropiedad();
-  }, [id]);
+  const onSubmit = (data) => updateMutation.mutate(data);
 
-  const onSubmit = async (data) => {
-    try {
-      const formData = new FormData();
-      Object.keys(data).forEach((key) => {
-        formData.append(key, data[key]);
-      });
-
-      await api.put(`/api/v1/users/me/properties/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setStatus("success")
-    } catch (error) {
-      console.error('Error updating property:', error);
-      setStatus("error")
-    }
-  };
-
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <Spinner fullScreen label="Cargando..." />;
 
   if (status === "success") {
     return (

@@ -1,31 +1,15 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '@shared/services/api';
+import { useQuery } from '@tanstack/react-query';
+import { getFeaturedProperties } from '@features/properties/services';
 import CardPropiedadDestacada from './CardPropiedadDestacada';
 
 const PropiedadesDestacadas = () => {
-    const [propiedades, setPropiedades] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
-    
-
-    useEffect(() => {
-        const fetchPropiedadesDestacadas = async () => {
-            try {
-                const { data } = await api.get('/api/v1/properties?featured=true');
-            
-                
-                setPropiedades(data.data || []);
-            } catch {
-                setError('Error al cargar propiedades destacadas');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPropiedadesDestacadas();
-    }, []);
+    const { data: propiedades = [], isLoading: loading, isError } = useQuery({
+        queryKey: ['properties', 'featured'],
+        queryFn: getFeaturedProperties,
+    });
+    const error = isError ? 'Error al cargar propiedades destacadas' : null;
 
     if (loading) {
         return (

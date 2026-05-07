@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from '@features/auth/context';
+import { usePropertyTypes } from '@features/properties/hooks';
 import UserMenu from './UserMenu';
-import { api } from '@shared/services/api';
 import { Menu, X } from 'lucide-react';
 import './Header.css'
 
 const Header = () => {
     const { isAuthenticated, user, logout, loading } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [categoriesLoading, setCategoriesLoading] = useState(true);
+    const { data, isLoading: categoriesLoading } = usePropertyTypes();
+    const categories = data?.propertyTypes ?? [];
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -20,22 +20,6 @@ const Header = () => {
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
-
-    // Fetch categories
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const { data } = await api.get('/api/v1/properties/types');
-                setCategories(data.propertyTypes);
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-            } finally {
-                setCategoriesLoading(false);
-            }
-        };
-
-        fetchCategories();
-    }, []);
 
     const handleCategoryClick = (categoryId) => {
         navigate(`/buscar?propertyType=${categoryId}`);

@@ -22,6 +22,7 @@
   "dependencies": {
     "@bienesraices/shared-types": "*",
     "@bienesraices/shared-utils": "*",
+    "@tanstack/react-query": "^5.100.9",
     "axios": "^1.7.7",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.563.0",

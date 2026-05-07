@@ -1,27 +1,25 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { api } from "@shared/services/api";
+import { useMutation } from "@tanstack/react-query";
+import { sendContactMessage } from "@features/properties/services";
 
-const FormularioContacto = ({ propertyId }) => {
+const PropertyContactForm = ({ propertyId }) => {
     const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
     const [status, setStatus] = useState(null); // null | "success" | "error"
-    const [loading, setLoading] = useState(false);
+
+    const { mutate, isPending: loading } = useMutation({
+        mutationFn: (payload) => sendContactMessage(propertyId, payload),
+        onSuccess: () => setStatus("success"),
+        onError: () => setStatus("error"),
+    });
 
     const handleChange = (e) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setLoading(true);
-        try {
-            await api.post(`/api/v1/properties/${propertyId}/contact`, formData);
-            setStatus("success");
-        } catch {
-            setStatus("error");
-        } finally {
-            setLoading(false);
-        }
+        mutate(formData);
     };
 
     if (status === "success") {
@@ -108,11 +106,11 @@ const FormularioContacto = ({ propertyId }) => {
     );
 };
 
-FormularioContacto.propTypes = {
+PropertyContactForm.propTypes = {
     propertyId: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
     ]).isRequired
 };
 
-export default FormularioContacto
+export default PropertyContactForm

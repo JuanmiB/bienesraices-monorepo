@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { Header } from "@shared/components/layout";
+import { Spinner } from "@shared/components/feedback";
 import PrivateRoute from "./PrivateRoute";
 
 // Lazy loading de páginas para code splitting
@@ -26,15 +27,7 @@ const ProfilePage = lazy(() => import("@features/user/pages/ProfilePage"));
 // Home page (new structure)
 const HomePage = lazy(() => import("@features/home/pages/HomePage"));
 
-// Componente de carga mientras se cargan las páginas
-const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="text-center">
-      <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-gray-600 font-medium">Cargando...</p>
-    </div>
-  </div>
-);
+const LoadingFallback = () => <Spinner size="xl" label="Cargando..." fullScreen />;
 
 const AppRouter = () => {
     return (
