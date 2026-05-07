@@ -74,6 +74,27 @@ try {
   process.exit(1)
 }
 
+// TEMPORAL: endpoint one-shot para seedear la DB. Requiere SEED_SECRET en env.
+// Eliminar este bloque + la env var en cuanto se haya poblado la DB.
+app.post('/api/seed-database', async (req, res) => {
+  const expected = process.env.SEED_SECRET
+  if (!expected) {
+    return res.status(503).json({ error: 'SEED_SECRET no configurada en el server' })
+  }
+  if (req.query.secret !== expected) {
+    return res.status(403).json({ error: 'No autorizado' })
+  }
+  try {
+    const { importarDatos } = await import('./seed/seeder.js')
+    await importarDatos(false)
+    logger.info('Base de datos seeded exitosamente')
+    res.json({ success: true, message: 'DB poblada. Eliminá el endpoint y la env var.' })
+  } catch (error) {
+    logger.error('Error al seedear la base de datos', { error: error.message })
+    res.status(500).json({ error: 'Error al poblar la base de datos', details: error.message })
+  }
+})
+
 // Health & API v1
 app.use('/api/health', healthRouter)
 app.use('/api/v1', v1Router)
