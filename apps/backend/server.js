@@ -13,6 +13,10 @@ import { logger } from './helpers/logger.js'
 
 const app = express()
 
+// Confiar en el proxy inmediato (Render, Vercel, etc.) para que
+// express-rate-limit lea correctamente la IP del cliente vía X-Forwarded-For
+app.set('trust proxy', 1)
+
 // Seguridad: Headers
 app.use(helmet())
 
