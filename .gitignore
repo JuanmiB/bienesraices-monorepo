@@ -60,6 +60,4 @@ apps/backend/public/uploads/
 *.swp
 *.swo
 
-# Mobile (excluido del repo web)
-apps/mobile/
 iniciar-mobile-ios.sh
