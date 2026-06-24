@@ -41,7 +41,6 @@ export const authentication = async (req, res) => {
     // Respuesta exitosa con campos relevantes
     res.status(200).json({
       message: 'Inicio de sesión exitoso',
-      token,
       user: {
         id: user.id,
         firstName: user.firstName,
@@ -124,6 +123,8 @@ export const resetPassword = async (req, res) => {
   }
   try {
     // Buscar al usuario por el token de recuperación
+    //  El token de reset se compara en texto plano en la DB -- CORREGIR: 
+    // Se debería hashear el token antes de guardarlo en la DB y comparar hashes
     const usuario = await User.findOne({ where: { recoveryToken: token } })
     if (!usuario) {
       return res.status(404).json({ message: 'Usuario no encontrado o token inválido' })
