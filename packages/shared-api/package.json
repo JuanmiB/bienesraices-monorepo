@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "axios": "^1.7.7",
-    "@bienesraices/shared-types": "*",
-    "@bienesraices/shared-utils": "*"
+    "@bienesraices/shared-types": "workspace:*",
+    "@bienesraices/shared-utils": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

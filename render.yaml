@@ -8,8 +8,8 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm install && npm run build -w @bienesraices/backend
-    startCommand: npm start -w @bienesraices/backend
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @bienesraices/backend build
+    startCommand: pnpm --filter @bienesraices/backend start
     rootDir: .
     healthCheckPath: /api/health
     envVars:

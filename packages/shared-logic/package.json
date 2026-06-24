@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "zustand": "^4.5.0",
-    "@bienesraices/shared-api": "*",
-    "@bienesraices/shared-types": "*",
-    "@bienesraices/shared-utils": "*"
+    "@bienesraices/shared-api": "workspace:*",
+    "@bienesraices/shared-types": "workspace:*",
+    "@bienesraices/shared-utils": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18.0.0"

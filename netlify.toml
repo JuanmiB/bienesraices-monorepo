@@ -1,11 +1,10 @@
 [build]
   base = "."
-  command = "npm run build:frontend"
+  command = "pnpm run build:frontend"
   publish = "apps/frontend/dist"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--include=optional"
 
 [[redirects]]
   from = "/*"

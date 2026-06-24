@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build -w @bienesraices/frontend",
+  "buildCommand": "pnpm --filter @bienesraices/frontend build",
   "outputDirectory": "./apps/frontend/dist",
-  "installCommand": "npm ci --include=optional || npm install --include=optional",
+  "installCommand": "pnpm install --frozen-lockfile",
   "framework": null,
   "rewrites": [
     {

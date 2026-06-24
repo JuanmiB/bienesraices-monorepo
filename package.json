@@ -2,26 +2,28 @@
   "name": "bienesraices-monorepo",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/frontend",
-    "apps/backend",
-    "packages/*"
-  ],
+  "packageManager": "pnpm@11.1.1",
   "scripts": {
-    "dev": "concurrently -n \"frontend,backend\" -c \"cyan,green\" \"npm run dev -w @bienesraices/frontend\" \"npm run dev -w @bienesraices/backend\"",
-    "dev:frontend": "npm run dev -w @bienesraices/frontend",
-    "dev:backend": "npm run dev -w @bienesraices/backend",
-    "build": "npm run build --workspaces --if-present",
-    "build:frontend": "npm run build -w @bienesraices/frontend",
-    "test": "npm run test --workspaces --if-present",
-    "test:frontend": "npm run test -w @bienesraices/frontend",
-    "lint": "npm run lint --workspaces --if-present",
+    "dev": "concurrently -n \"frontend,backend\" -c \"cyan,green\" \"pnpm --filter @bienesraices/frontend dev\" \"pnpm --filter @bienesraices/backend dev\"",
+    "dev:frontend": "pnpm --filter @bienesraices/frontend dev",
+    "dev:backend": "pnpm --filter @bienesraices/backend dev",
+    "build": "pnpm -r --if-present build",
+    "build:frontend": "pnpm --filter @bienesraices/frontend build",
+    "test": "pnpm -r --if-present test",
+    "test:frontend": "pnpm --filter @bienesraices/frontend test",
+    "lint": "pnpm -r --if-present lint",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
-    "install:all": "npm install",
+    "install:all": "pnpm install",
     "typecheck": "tsc --noEmit -p packages/shared-types/tsconfig.json"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
     "typescript": "^5.3.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "bcrypt",
+      "esbuild"
+    ]
   }
 }

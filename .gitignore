@@ -3,6 +3,9 @@ node_modules/
 apps/*/node_modules/
 packages/*/node_modules/
 
+# npm lockfile (project uses pnpm; pnpm-lock.yaml is committed)
+package-lock.json
+
 # OS files
 .DS_Store
 Thumbs.db
