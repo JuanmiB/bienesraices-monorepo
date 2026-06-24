@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
 
 const secret = process.env.JWT_SECRET
 
@@ -22,4 +23,12 @@ export function generateToken (user) {
   // Generar el token
   const token = jwt.sign(payload, secret, options)
   return token
+}
+
+export const generateSecureToken = () => {
+  // Generador genérico de token aleatorio + expiración (1h).
+  // Se usa tanto para el reset de password como para la verificación de cuenta.
+  const token = crypto.randomBytes(32).toString('hex')
+  const expiration = new Date(Date.now() + 1000 * 60 * 60)
+  return { token, expiration }
 }
