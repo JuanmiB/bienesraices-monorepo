@@ -5,7 +5,12 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  // No incluimos plugins aquí para evitar conflictos con PostCSS
+  // No incluimos plugins aquí para evitar conflictos con PostCSS.
+  // Usamos el runtime JSX automático (como el build con @vitejs/plugin-react)
+  // para que los componentes no necesiten importar React explícitamente.
+  esbuild: {
+    jsx: 'automatic',
+  },
   test: {
     globals: true,
     environment: 'happy-dom',
