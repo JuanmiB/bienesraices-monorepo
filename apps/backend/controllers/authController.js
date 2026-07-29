@@ -4,16 +4,10 @@ import jwt from 'jsonwebtoken'
 import { sendRecoveryEmail, sendVerificationEmail } from '../services/email.js'
 import { logger } from '../helpers/logger.js'
 import { ERROR_MESSAGES } from '@bienesraices/shared-utils/constants'
-import { isValidEmail } from '@bienesraices/shared-utils/validation'
 
 export const authentication = async (req, res) => {
   // Extraigo email y password del body
   const { email, password } = req.body
-
-  // Validar formato de email
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ message: ERROR_MESSAGES.VALIDATION_ERROR })
-  }
 
   try {
     // Buscar usuario por email usando método estático
