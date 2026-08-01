@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize'
 import bcrypt from 'bcrypt'
 import db from '../config/db.js'
+import { hashToken } from '../helpers/tokens.js'
 
 export const User = db.define('users', {
   id: {
@@ -164,7 +165,7 @@ User.findByGoogleId = async function (googleId) {
 }
 
 User.findByValidRecoveryToken = async function (token) {
-  const user = await User.findOne({ where: { recoveryToken: token } })
+  const user = await User.findOne({ where: { recoveryToken: hashToken(token) } })
   if (!user) {
     return { user: null, reason: 'not_found' }
   }

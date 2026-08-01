@@ -1,5 +1,5 @@
 import { User } from '../models/User.js'
-import { generateToken, generateSecureToken } from '../helpers/tokens.js'
+import { generateToken, generateSecureToken, hashToken } from '../helpers/tokens.js'
 import jwt from 'jsonwebtoken'
 import { sendRecoveryEmail, sendVerificationEmail } from '../services/email.js'
 import { logger } from '../helpers/logger.js'
@@ -95,11 +95,10 @@ export const recoverPassword = async (req, res) => {
     }
     // Generar un token seguro
     const { token: recoveryToken, expiration: tokenExpiration } = generateSecureToken()
-    // Guardar el token en el usuario
-    usuario.recoveryToken = recoveryToken
+    // Guardar SOLO el hash del token en la DB (el crudo viaja en el email)
+    usuario.recoveryToken = hashToken(recoveryToken)
     usuario.recoveryTokenExpiration = tokenExpiration
-    await usuario.save()
-    // Enviar email de recuperación
+    await usuario.save()    // Enviar email de recuperación con el token crudo
     await sendRecoveryEmail(email, recoveryToken)
     return res.status(200).json({ message: 'Se envió un email para recuperar la contraseña' })
   } catch (error) {
@@ -115,9 +114,7 @@ export const resetPassword = async (req, res) => {
     return res.status(400).json({ message: 'Token y nueva contraseña son requeridos' })
   }
   try {
-    // Buscar al usuario por el token de recuperación
-    //  El token de reset se compara en texto plano en la DB -- CORREGIR:
-    // Se debería hashear el token antes de guardarlo en la DB y comparar hashes
+    // Buscar al usuario por el token de recuperación (se compara por hash)
     const { user: usuario, reason } = await User.findByValidRecoveryToken(token)
     if (reason === 'not_found') {
       return res.status(404).json({ message: 'Usuario no encontrado o token inválido' })
