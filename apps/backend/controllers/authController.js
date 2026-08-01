@@ -116,14 +116,13 @@ export const resetPassword = async (req, res) => {
   }
   try {
     // Buscar al usuario por el token de recuperación
-    //  El token de reset se compara en texto plano en la DB -- CORREGIR: 
+    //  El token de reset se compara en texto plano en la DB -- CORREGIR:
     // Se debería hashear el token antes de guardarlo en la DB y comparar hashes
-    const usuario = await User.findOne({ where: { recoveryToken: token } })
-    if (!usuario) {
+    const { user: usuario, reason } = await User.findByValidRecoveryToken(token)
+    if (reason === 'not_found') {
       return res.status(404).json({ message: 'Usuario no encontrado o token inválido' })
     }
-    // Verificar expiración del token
-    if (!usuario.recoveryTokenExpiration || usuario.recoveryTokenExpiration < new Date()) {
+    if (reason === 'expired') {
       return res.status(401).json({ message: 'Token expirado' })
     }
     // Actualizar la contraseña (se hashea en el hook)
@@ -145,11 +144,11 @@ export const verifyToken = async (req, res) => {
   }
   try {
     // Buscar el token de recuperación en la base de datos
-    const usuario = await User.findOne({ where: { recoveryToken: token } })
-    if (!usuario) {
+    const { reason } = await User.findByValidRecoveryToken(token)
+    if (reason === 'not_found') {
       return res.status(404).json({ message: 'Token de recuperación no válido o ha expirado' })
     }
-    if (!usuario.recoveryTokenExpiration || usuario.recoveryTokenExpiration < new Date()) {
+    if (reason === 'expired') {
       return res.status(401).json({ message: 'Token no válido o ha expirado' })
     }
     return res.status(200).json({ message: 'Token válido, puede restablecer su contraseña' })

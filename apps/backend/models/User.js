@@ -162,3 +162,14 @@ User.findByEmail = async function (email) {
 User.findByGoogleId = async function (googleId) {
   return await User.findOne({ where: { googleId } })
 }
+
+User.findByValidRecoveryToken = async function (token) {
+  const user = await User.findOne({ where: { recoveryToken: token } })
+  if (!user) {
+    return { user: null, reason: 'not_found' }
+  }
+  if (!user.recoveryTokenExpiration || user.recoveryTokenExpiration < new Date()) {
+    return { user: null, reason: 'expired' }
+  }
+  return { user, reason: null }
+}
