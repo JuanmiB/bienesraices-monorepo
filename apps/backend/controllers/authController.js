@@ -192,7 +192,8 @@ export const registrarUsuario = async (req, res) => {
 
     const { token: verificationToken, expiration: verificationTokenExpiration } = generateSecureToken()
 
-    nuevoUsuario.verificationToken = verificationToken
+    // Guardar SOLO el hash del token en la DB (el crudo viaja en el email)
+    nuevoUsuario.verificationToken = hashToken(verificationToken)
     nuevoUsuario.verificationTokenExpiration = verificationTokenExpiration
 
     await nuevoUsuario.save()
@@ -251,7 +252,7 @@ export const verifyEmail = async (req, res) => {
 
   try {
     const usuario = await User.findOne({
-      where: { verificationToken: token }
+      where: { verificationToken: hashToken(token) }
     })
 
     if (!usuario) {
